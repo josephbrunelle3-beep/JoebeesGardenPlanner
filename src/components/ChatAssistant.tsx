@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Loader2, MessageCircle, Send, X } from "lucide-react";
 import { usePlanner } from "@/lib/store";
 
@@ -23,6 +24,7 @@ const WELCOME: ChatMessage = {
 };
 
 export function ChatAssistant() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [input, setInput] = useState("");
@@ -92,6 +94,9 @@ export function ChatAssistant() {
       setStreaming(false);
     }
   }
+
+  // Hide the assistant entirely on the printable garden sheet.
+  if (pathname?.startsWith("/planner/print")) return null;
 
   return (
     <>
