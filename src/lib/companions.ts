@@ -77,14 +77,26 @@ export function analyzeBed(bed: GardenBed): CompatibilityIssue[] {
     }
   }
 
-  // Dedupe identical messages.
-  const seen = new Set<string>();
-  return issues.filter((i) => {
-    const key = `${i.level}|${i.message}|${[...i.instanceIds].sort().join(",")}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  // Group identical messages (same level + text). Merge their instanceIds and
+  // append a "× N" suffix when the same issue appears more than once so the
+  // panel doesn't flood with duplicates.
+  const groups = new Map<string, CompatibilityIssue & { _count: number }>();
+  for (const i of issues) {
+    const key = `${i.level}|${i.message}`;
+    const existing = groups.get(key);
+    if (existing) {
+      existing._count += 1;
+      for (const id of i.instanceIds) {
+        if (!existing.instanceIds.includes(id)) existing.instanceIds.push(id);
+      }
+    } else {
+      groups.set(key, { ...i, instanceIds: [...i.instanceIds], _count: 1 });
+    }
+  }
+  return Array.from(groups.values()).map(({ _count, ...rest }) => ({
+    ...rest,
+    message: _count > 1 ? `${rest.message} (×${_count})` : rest.message,
+  }));
 }
 
 export function checkConditions(plant: Plant, c: BedConditions): string[] {
