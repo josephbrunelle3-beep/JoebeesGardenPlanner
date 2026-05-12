@@ -120,6 +120,7 @@ export function GardenCanvas({
           className="relative inline-block max-w-full overflow-auto rounded-xl border border-soil-300 bg-soil-100 p-3 shadow-inner"
           style={{ maxHeight: "70vh" }}
         >
+          <CompassBadge />
           <div
             className="relative grid"
             style={{
@@ -179,6 +180,69 @@ export function GardenCanvas({
         {children}
       </div>
     </DndContext>
+  );
+}
+
+/**
+ * North compass + a hover/tap explainer. Points to the top of the grid so
+ * users place tall plants (which we put at low y) on the north side, where
+ * they won't shade the rest of the bed.
+ */
+function CompassBadge() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="absolute right-3 top-3 z-10">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        aria-label="North indicator — tap for orientation tips"
+        className="group flex h-14 w-14 flex-col items-center justify-center rounded-full border border-leaf-300 bg-white/95 shadow-md backdrop-blur-sm transition hover:shadow-lg"
+      >
+        <span className="font-display text-[10px] font-bold uppercase tracking-widest text-leaf-700">
+          N
+        </span>
+        <span aria-hidden className="-mt-0.5 text-lg leading-none text-leaf-700">
+          ↑
+        </span>
+        <span className="mt-0.5 text-[8px] font-medium uppercase tracking-wide text-leaf-700/60">
+          info
+        </span>
+      </button>
+      {open && (
+        <div
+          role="tooltip"
+          className="absolute right-0 top-16 z-20 w-72 rounded-xl border border-leaf-200 bg-white p-3 text-[11px] leading-snug text-leaf-800 shadow-lg"
+        >
+          <p className="font-display text-xs font-semibold text-leaf-900">
+            Which way is north?
+          </p>
+          <p className="mt-1">
+            The <strong>top of the bed</strong> on this map represents the{" "}
+            <strong>north side</strong> of your garden.
+          </p>
+          <p className="mt-2 font-semibold text-leaf-900">Why it matters</p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-4">
+            <li>
+              The sun travels across the southern sky, so anything tall on the
+              <em> north</em> side won&apos;t shade the rest of the bed.
+            </li>
+            <li>
+              Place <strong>tall plants</strong> (tomatoes, corn, trellised
+              beans) along the top.
+            </li>
+            <li>
+              Put <strong>short or shade-tolerant plants</strong> (lettuce,
+              herbs, radishes) along the bottom — the south side.
+            </li>
+          </ul>
+          <p className="mt-2 text-[10px] text-leaf-700/70">
+            Tip: stand at the bottom of your bed facing the map. North is up.
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 
