@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Info as InfoIcon, ShoppingCart, Sprout } from "lucide-react";
+import { ExternalLink, Info as InfoIcon, MapPin, ShoppingCart, Sprout } from "lucide-react";
 import { usePlanner } from "@/lib/store";
 import { getPlant } from "@/lib/plants";
-import { getShopLinks } from "@/lib/sources";
+import { getLocalSuppliers, getShopLinks } from "@/lib/sources";
 import {
   COMPANION_PRINCIPLES,
   getPairReason,
@@ -15,6 +15,7 @@ export function PlantInfoPanel() {
   const placed = usePlanner((s) =>
     s.bed.plants.find((p) => p.instanceId === selectedId),
   );
+  const zip = usePlanner((s) => s.bed.conditions.zip);
   const plant = placed ? getPlant(placed.plantId) : null;
   const [tab, setTab] = useState<"details" | "varieties" | "shop">("details");
 
@@ -29,6 +30,7 @@ export function PlantInfoPanel() {
 
   const shopTerm = plant.shopSearch ?? plant.name;
   const shopLinks = getShopLinks(shopTerm);
+  const localSuppliers = zip ? getLocalSuppliers(zip, shopTerm) : [];
 
   return (
     <div className="flex flex-col gap-2 text-xs text-leaf-900">
@@ -152,31 +154,70 @@ export function PlantInfoPanel() {
       )}
 
       {tab === "shop" && (
-        <div className="flex flex-col gap-2">
-          <p className="text-[11px] text-leaf-700/80">
-            Search top retailers for{" "}
-            <strong className="text-leaf-900">{shopTerm}</strong>:
-          </p>
-          <ul className="flex flex-col gap-1">
-            {shopLinks.map((l) => (
-              <li key={l.retailer}>
-                <a
-                  href={l.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-md border border-leaf-200 bg-white px-2 py-1.5 text-[12px] font-medium text-leaf-900 hover:bg-leaf-50"
-                >
-                  <span className="flex items-center gap-2">
-                    {l.retailer}
-                    <span className="rounded-full bg-leaf-100 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-leaf-700">
-                      {l.best === "both" ? "seeds & supplies" : l.best}
+        <div className="flex flex-col gap-3">
+          <div>
+            <p className="text-[11px] text-leaf-700/80">
+              Search top retailers for{" "}
+              <strong className="text-leaf-900">{shopTerm}</strong>:
+            </p>
+            <ul className="mt-1 flex flex-col gap-1">
+              {shopLinks.map((l) => (
+                <li key={l.retailer}>
+                  <a
+                    href={l.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-md border border-leaf-200 bg-white px-2 py-1.5 text-[12px] font-medium text-leaf-900 hover:bg-leaf-50"
+                  >
+                    <span className="flex items-center gap-2">
+                      {l.retailer}
+                      <span className="rounded-full bg-leaf-100 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-leaf-700">
+                        {l.best === "both" ? "seeds & supplies" : l.best}
+                      </span>
                     </span>
-                  </span>
-                  <ExternalLink className="h-3 w-3 text-leaf-700/60" />
-                </a>
-              </li>
-            ))}
-          </ul>
+                    <ExternalLink className="h-3 w-3 text-leaf-700/60" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {zip ? (
+            <div>
+              <p className="flex items-center gap-1 text-[11px] font-semibold text-leaf-800">
+                <MapPin className="h-3 w-3 text-leaf-600" /> Near you ({zip})
+              </p>
+              <ul className="mt-1 flex flex-col gap-1">
+                {localSuppliers.map((s) => (
+                  <li key={s.label}>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start justify-between gap-2 rounded-md border border-leaf-200 bg-leaf-50/60 px-2 py-1.5 text-[12px] font-medium text-leaf-900 hover:bg-leaf-50"
+                    >
+                      <span className="flex flex-col">
+                        <span>{s.label}</span>
+                        {s.note && (
+                          <span className="text-[10px] font-normal text-leaf-700/70">
+                            {s.note}
+                          </span>
+                        )}
+                      </span>
+                      <ExternalLink className="mt-0.5 h-3 w-3 shrink-0 text-leaf-700/60" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <div className="rounded-md border border-dashed border-leaf-200 bg-leaf-50/40 px-2 py-1.5 text-[11px] text-leaf-700/80">
+              <MapPin className="mr-1 inline h-3 w-3" />
+              Add a ZIP code in the bed setup to also see local garden centers,
+              nurseries, and stores nearby.
+            </div>
+          )}
+
           <p className="text-[10px] text-leaf-700/60">
             Links open the retailer&apos;s search results — availability and
             pricing vary by season and location.

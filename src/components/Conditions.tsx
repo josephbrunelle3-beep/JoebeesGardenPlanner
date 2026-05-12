@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, MapPin } from "lucide-react";
 import { usePlanner } from "@/lib/store";
 import type { BedConditions } from "@/lib/types";
@@ -27,6 +27,12 @@ export function Conditions() {
   const [zipMessage, setZipMessage] = useState<string | null>(null);
   const [zipError, setZipError] = useState<string | null>(null);
 
+  // Restore previously saved ZIP into the input.
+  useEffect(() => {
+    if (conditions.zip && !zip) setZip(conditions.zip);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conditions.zip]);
+
   async function lookupZip() {
     setZipError(null);
     setZipMessage(null);
@@ -41,7 +47,7 @@ export function Conditions() {
       if (!res.ok) {
         setZipError(data.error ?? "Couldn't find that ZIP.");
       } else {
-        setConditions({ zone: data.zone });
+        setConditions({ zone: data.zone, zip });
         setZipMessage(`Zone ${data.label} — set!`);
       }
     } catch (e) {

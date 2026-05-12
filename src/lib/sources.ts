@@ -49,6 +49,59 @@ export function getShopLinks(searchTerm: string): ShopSource[] {
   }));
 }
 
+export interface LocalSupplier {
+  retailer: string;
+  /** Short label e.g. "Garden centers near you", "Home Depot nearby". */
+  label: string;
+  url: string;
+  note?: string;
+}
+
+/**
+ * Build "near me" supplier search links for a 5-digit US ZIP. Each link uses
+ * the retailer's public store-locator or a Google Maps query so we don't need
+ * an API key.
+ */
+export function getLocalSuppliers(zip: string, searchTerm: string): LocalSupplier[] {
+  const z = zip.trim();
+  if (!/^\d{5}$/.test(z)) return [];
+  const q = encodeURIComponent(searchTerm);
+  return [
+    {
+      retailer: "Google Maps",
+      label: "Local garden centers & nurseries",
+      url: `https://www.google.com/maps/search/garden+center+OR+nursery+near+${z}`,
+      note: "Independent nurseries often carry regionally adapted varieties.",
+    },
+    {
+      retailer: "Google Maps",
+      label: `Local ${searchTerm} suppliers`,
+      url: `https://www.google.com/maps/search/${q}+near+${z}`,
+    },
+    {
+      retailer: "Home Depot",
+      label: "Home Depot store locator",
+      url: `https://www.homedepot.com/l/search/${z}`,
+    },
+    {
+      retailer: "Lowe's",
+      label: "Lowe's store locator",
+      url: `https://www.lowes.com/store?zipCode=${z}`,
+    },
+    {
+      retailer: "Ace Hardware",
+      label: "Ace Hardware nearby",
+      url: `https://www.acehardware.com/store-locator?searchQuery=${z}`,
+    },
+    {
+      retailer: "USDA",
+      label: "Farmers markets near you",
+      url: `https://www.usdalocalfoodportal.com/fe/fdirectory_farmersmarket/?zip=${z}&radius=20`,
+      note: "Some markets sell vegetable starts and seedlings in spring.",
+    },
+  ];
+}
+
 /**
  * Soil, compost, and raised-bed material links.
  */

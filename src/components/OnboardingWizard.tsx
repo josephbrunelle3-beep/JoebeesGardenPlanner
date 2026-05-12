@@ -60,7 +60,7 @@ export function OnboardingWizard() {
       if (!res.ok || typeof data.zone !== "number") {
         setZipError(data.error ?? "Couldn't look that up.");
       } else {
-        setConditions({ zone: data.zone });
+        setConditions({ zone: data.zone, zip });
         setZipLookedUp(true);
       }
     } catch {

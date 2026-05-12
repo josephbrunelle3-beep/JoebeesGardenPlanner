@@ -77,6 +77,8 @@ export interface BedConditions {
   soil: SoilType;
   ph: SoilPh;
   zone: number;
+  /** Optional 5-digit US ZIP code used to find local suppliers. */
+  zip?: string;
 }
 
 export interface CompatibilityIssue {
