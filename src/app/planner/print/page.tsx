@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Printer } from "lucide-react";
 import { loadFromLocal } from "@/lib/persistence";
 import { getPlant } from "@/lib/plants";
@@ -138,6 +138,8 @@ export default function PrintSheetPage() {
         </footer>
       </main>
 
+      <BrandMark />
+
       <style>{`
         @media print {
           @page { size: letter; margin: 0.5in; }
@@ -197,21 +199,13 @@ function Toggle({
 function Header({ bed }: { bed: GardenBed }) {
   return (
     <section className="avoid-break flex flex-wrap items-end justify-between gap-3 border-b-2 border-leaf-700 pb-3">
-      <div className="flex items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/joebee.png"
-          alt="JoeBees"
-          className="h-12 w-12 rounded-full border border-leaf-300 bg-white object-cover shadow-sm print:shadow-none"
-        />
-        <div>
-          <h1 className="font-display text-2xl font-bold leading-tight text-leaf-900">
-            {bed.name || "My Garden Bed"}
-          </h1>
-          <p className="mt-0.5 text-[11px] text-leaf-700">
-            {bed.width} × {bed.height} ft raised bed · {bed.plants.length} placements
-          </p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-bold leading-tight text-leaf-900">
+          {bed.name || "My Garden Bed"}
+        </h1>
+        <p className="mt-0.5 text-[11px] text-leaf-700">
+          {bed.width} × {bed.height} ft raised bed · {bed.plants.length} placements
+        </p>
       </div>
       <dl className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px] text-leaf-800 sm:grid-cols-4">
         <Field label="Sun" value={bed.conditions.sun.replace("-", " ")} />
@@ -221,6 +215,43 @@ function Header({ bed }: { bed: GardenBed }) {
         {bed.conditions.zip && <Field label="ZIP" value={bed.conditions.zip} />}
       </dl>
     </section>
+  );
+}
+
+/**
+ * Floating brand mark — a still frame from the JoeBee intro video, shown
+ * in the same bottom-right spot where the "Ask JoeBee" chat button lives
+ * on the planner. Renders inline on screen and on the printed page.
+ */
+function BrandMark() {
+  const ref = useRef<HTMLVideoElement | null>(null);
+  // Force the first frame to be drawn so the <video> shows a still even
+  // when paused (some browsers won't render a frame until currentTime moves).
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    const onLoaded = () => {
+      try {
+        v.currentTime = 0.05;
+      } catch {
+        /* ignore */
+      }
+    };
+    v.addEventListener("loadedmetadata", onLoaded);
+    return () => v.removeEventListener("loadedmetadata", onLoaded);
+  }, []);
+  return (
+    <div className="pointer-events-none fixed bottom-4 right-4 z-20 print:bottom-3 print:right-3">
+      <video
+        ref={ref}
+        src="/JOEBEE.mp4"
+        muted
+        playsInline
+        preload="auto"
+        aria-hidden
+        className="h-14 w-14 rounded-full border border-leaf-300 bg-white object-cover shadow-md print:h-16 print:w-16 print:shadow-none"
+      />
+    </div>
   );
 }
 
