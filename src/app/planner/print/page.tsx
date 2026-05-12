@@ -225,90 +225,166 @@ function Field({ label, value }: { label: string; value: string }) {
 }
 
 function BedMap({ bed }: { bed: GardenBed }) {
-  // SVG-based map so it scales cleanly when printing.
-  const CELL = 36;
+  // SVG-based map so it scales cleanly when printing. Larger cells +
+  // numbered legend below keeps the grid uncluttered.
+  const CELL = 56;
   const W = bed.width * CELL;
   const H = bed.height * CELL;
+
+  // Build a stable legend: each unique plant gets a number.
+  const order: string[] = [];
+  for (const p of bed.plants) if (!order.includes(p.plantId)) order.push(p.plantId);
+  const indexById = new Map(order.map((id, i) => [id, i + 1]));
+  const legend = order
+    .map((id) => {
+      const plant = getPlant(id);
+      if (!plant) return null;
+      const fp = getFootprint(plant);
+      const count = bed.plants.filter((pp) => pp.plantId === id).length;
+      const totalUnits = count * fp.perCell;
+      return {
+        id,
+        n: indexById.get(id)!,
+        plant,
+        count,
+        totalUnits,
+        perCell: fp.perCell,
+      };
+    })
+    .filter((x): x is NonNullable<typeof x> => !!x);
+
   return (
     <section className="avoid-break">
-      <SectionTitle>Bed map (north at top)</SectionTitle>
+      <SectionTitle>Bed map</SectionTitle>
       <p className="text-[10px] text-leaf-700/70">
-        Each square = 1 ft. Use as a guide when planting outside.
+        Each square = 1 ft. Numbers match the legend on the right.
       </p>
-      <div className="mt-2 inline-block rounded-md border border-leaf-300 bg-white p-2">
-        <svg
-          width={W}
-          height={H}
-          viewBox={`0 0 ${W} ${H}`}
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Grid */}
-          {Array.from({ length: bed.width + 1 }).map((_, i) => (
-            <line
-              key={`v${i}`}
-              x1={i * CELL}
-              x2={i * CELL}
-              y1={0}
-              y2={H}
-              stroke="#a8c3a0"
-              strokeWidth={i === 0 || i === bed.width ? 1.5 : 0.5}
-            />
-          ))}
-          {Array.from({ length: bed.height + 1 }).map((_, i) => (
-            <line
-              key={`h${i}`}
-              x1={0}
-              x2={W}
-              y1={i * CELL}
-              y2={i * CELL}
-              stroke="#a8c3a0"
-              strokeWidth={i === 0 || i === bed.height ? 1.5 : 0.5}
-            />
-          ))}
-          {/* Plants */}
-          {bed.plants.map((p) => {
-            const plant = getPlant(p.plantId);
-            if (!plant) return null;
-            const fp = getFootprint(plant);
-            const x = p.x * CELL + 2;
-            const y = p.y * CELL + 2;
-            const w = fp.w * CELL - 4;
-            const h = fp.h * CELL - 4;
-            return (
-              <g key={p.instanceId}>
-                <rect
-                  x={x}
-                  y={y}
-                  width={w}
-                  height={h}
-                  rx={4}
-                  fill="#ffffff"
-                  stroke="#3f6d3a"
-                  strokeWidth={0.75}
-                />
-                <text
-                  x={x + w / 2}
-                  y={y + h / 2}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontSize={Math.min(18, w * 0.5)}
-                >
-                  {plant.emoji}
-                </text>
-                <text
-                  x={x + w / 2}
-                  y={y + h - 3}
-                  textAnchor="middle"
-                  fontSize={7}
-                  fill="#3a4a36"
-                >
-                  {plant.name}
-                  {fp.perCell > 1 ? ` ×${fp.perCell}` : ""}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
+      <div className="mt-2 flex flex-wrap items-start gap-4">
+        <div className="rounded-md border border-leaf-300 bg-white p-2">
+          <svg
+            width={W}
+            height={H}
+            viewBox={`0 0 ${W} ${H}`}
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Grid */}
+            {Array.from({ length: bed.width + 1 }).map((_, i) => (
+              <line
+                key={`v${i}`}
+                x1={i * CELL}
+                x2={i * CELL}
+                y1={0}
+                y2={H}
+                stroke="#a8c3a0"
+                strokeWidth={i === 0 || i === bed.width ? 1.5 : 0.5}
+              />
+            ))}
+            {Array.from({ length: bed.height + 1 }).map((_, i) => (
+              <line
+                key={`h${i}`}
+                x1={0}
+                x2={W}
+                y1={i * CELL}
+                y2={i * CELL}
+                stroke="#a8c3a0"
+                strokeWidth={i === 0 || i === bed.height ? 1.5 : 0.5}
+              />
+            ))}
+            {/* Plants */}
+            {bed.plants.map((p) => {
+              const plant = getPlant(p.plantId);
+              if (!plant) return null;
+              const fp = getFootprint(plant);
+              const pad = 3;
+              const x = p.x * CELL + pad;
+              const y = p.y * CELL + pad;
+              const w = fp.w * CELL - pad * 2;
+              const h = fp.h * CELL - pad * 2;
+              const n = indexById.get(p.plantId) ?? 0;
+              const emojiSize = Math.min(28, w * 0.55);
+              return (
+                <g key={p.instanceId}>
+                  <rect
+                    x={x}
+                    y={y}
+                    width={w}
+                    height={h}
+                    rx={5}
+                    fill="#ffffff"
+                    stroke="#3f6d3a"
+                    strokeWidth={0.75}
+                  />
+                  {/* Number badge in top-left corner */}
+                  <circle
+                    cx={x + 8}
+                    cy={y + 8}
+                    r={6.5}
+                    fill="#3f6d3a"
+                  />
+                  <text
+                    x={x + 8}
+                    y={y + 8}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={8}
+                    fontWeight={700}
+                    fill="#ffffff"
+                  >
+                    {n}
+                  </text>
+                  {/* Plant emoji centered */}
+                  <text
+                    x={x + w / 2}
+                    y={y + h / 2 + 1}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={emojiSize}
+                  >
+                    {plant.emoji}
+                  </text>
+                  {/* Per-sqft count badge (only when >1) */}
+                  {fp.perCell > 1 && (
+                    <text
+                      x={x + w - 3}
+                      y={y + h - 3}
+                      textAnchor="end"
+                      fontSize={8}
+                      fontWeight={600}
+                      fill="#3a4a36"
+                    >
+                      ×{fp.perCell}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Legend */}
+        {legend.length > 0 && (
+          <ol className="min-w-[160px] flex-1 space-y-0.5 text-[11px]">
+            {legend.map((row) => (
+              <li key={row.id} className="flex items-baseline gap-2">
+                <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-leaf-700 text-[9px] font-bold text-white">
+                  {row.n}
+                </span>
+                <span className="text-base leading-none" aria-hidden>
+                  {row.plant.emoji}
+                </span>
+                <span className="flex-1">
+                  <span className="font-medium">{row.plant.name}</span>
+                  <span className="text-leaf-700/70">
+                    {" "}
+                    — {row.totalUnits}
+                    {row.totalUnits === 1 ? " plant" : " plants"}
+                    {row.perCell > 1 ? ` (${row.count} sqft × ${row.perCell})` : ""}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
       </div>
     </section>
   );
