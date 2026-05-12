@@ -7,6 +7,46 @@ import type { PlacedPlant } from "@/lib/types";
 
 export const runtime = "nodejs";
 
+/**
+ * Strip technical jargon and translate axis/zone talk into plain language
+ * if the model slips them through, then clamp to two short sentences.
+ */
+function cleanRationale(text: string): string {
+  let out = text.trim();
+  // Drop bracketed coordinate annotations like "(y=0-1)" or "[x=2, y=3]".
+  out = out.replace(/\s*[\(\[]\s*[xy]\s*[=:][^\)\]]*[\)\]]/gi, "");
+  // Translate axis words.
+  out = out
+    .replace(/\b(?:low|high)\s+y\b/gi, (m) =>
+      /low/i.test(m) ? "back of the bed" : "front of the bed",
+    )
+    .replace(/\b(?:low|high)\s+x\b/gi, (m) =>
+      /low/i.test(m) ? "left side" : "right side",
+    )
+    .replace(/\b(?:north|south)\s+(?:side|end|row)\b/gi, (m) =>
+      /north/i.test(m) ? "back of the bed" : "front of the bed",
+    )
+    .replace(/\bnorth\b/gi, "back")
+    .replace(/\bsouth\b/gi, "front")
+    .replace(/\bantagonist[s]?\b/gi, "plants that don't get along")
+    .replace(/\bcompanion planting\b/gi, "good plant pairings")
+    .replace(/\bsuccession\b/gi, "staggered")
+    .replace(/\boptimized\b/gi, "set up")
+    .replace(/\bprioritiz(?:e|es|ed|ing)\b/gi, "focus on")
+    .replace(/\bsqft\b/gi, "square foot")
+    .replace(/\bzone\s*\d+\b/gi, "your area")
+    .replace(/\bfull-?sun\b/gi, "plenty of sun")
+    .replace(/\bpart-?(?:sun|shade)\b/gi, "partial sun")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+([.,;])/g, "$1");
+  // Limit to first 2 sentences.
+  const sentences = out.match(/[^.!?]+[.!?]+/g);
+  if (sentences && sentences.length > 2) {
+    out = sentences.slice(0, 2).join(" ").trim();
+  }
+  return out.trim();
+}
+
 const RequestSchema = z.object({
   prompt: z.string().min(1).max(2000),
   width: z.number().int().min(1).max(40),
@@ -123,11 +163,18 @@ Layout rules:
 
 Output rules:
 - Output JSON only. No prose outside the JSON.
-- Write a SHORT, friendly rationale (1–2 sentences, ~25 words max) aimed at
-  a brand-new gardener. Plain language, no coordinates, no jargon like
-  "antagonist" or "y=0". Focus on what the gardener gets out of the layout
-  (e.g. "Tall sunflowers shade the lettuce in the afternoon, basil keeps
-  pests off the tomatoes").
+- Write a SHORT, friendly rationale: 1–2 sentences, 30 words MAX, aimed at
+  a brand-new gardener who has never planted anything before.
+- Use ONLY plain everyday words. Talk about "front of the bed" or
+  "back of the bed", never coordinates, axes, cell numbers, or letters like
+  x or y.
+- Banned words/phrases in the rationale: "x", "y", "y=", "x=", "coordinates",
+  "grid", "cell", "sqft", "square foot", "antagonist", "companion planting",
+  "succession", "profile", "prioritize", "optimized", "zone 6" (or any other
+  zone number), "full-sun", "part-sun", "part-shade", "shade" (as a category
+  label), "high y", "low y", "north", "south".
+- Focus on what the gardener GETS: "Basil keeps pests off the tomatoes, and
+  the lettuce sits at the front so it's easy to pick."
 
 JSON shape:
 {
@@ -231,7 +278,7 @@ Return the JSON layout now.`;
     }
 
     return NextResponse.json({
-      rationale: result.data.rationale,
+      rationale: cleanRationale(result.data.rationale),
       plants: placements,
     });
   } catch (err) {
