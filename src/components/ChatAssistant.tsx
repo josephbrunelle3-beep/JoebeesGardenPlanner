@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Send, X } from "lucide-react";
+import { Loader2, MessageCircle, Send, X } from "lucide-react";
 import { usePlanner } from "@/lib/store";
 
 interface ChatMessage {
@@ -146,6 +146,13 @@ export function ChatAssistant() {
               aria-hidden
               className="absolute inset-0 h-full w-full scale-125 object-cover object-center"
             />
+          </span>
+          {/* Mobile-only chat indicator badge */}
+          <span
+            aria-hidden
+            className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-leaf-600 text-white shadow ring-2 ring-white sm:hidden"
+          >
+            <MessageCircle className="h-3 w-3" fill="currentColor" />
           </span>
           <span className="hidden flex-col items-start leading-tight sm:flex">
             <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-800/80">
