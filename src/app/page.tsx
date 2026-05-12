@@ -111,13 +111,7 @@ export default function Home() {
                 </span>
               </div>
             </div>
-            {/* Floating accent card */}
-            <div className="absolute -bottom-3 -left-3 hidden rounded-xl border border-leaf-200 bg-white px-3 py-2 text-[11px] font-medium text-leaf-800 shadow-md sm:block">
-              ✅ Companions paired
-            </div>
-            <div className="absolute -top-3 -right-3 hidden rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-900 shadow-md sm:block">
-              🌞 Tall plants → back
-            </div>
+            {/* Floating accent cards removed — kept the card clean. */}
           </div>
         </section>
 
