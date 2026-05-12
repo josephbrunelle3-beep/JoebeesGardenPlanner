@@ -1,15 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { ChatAssistant } from "@/components/ChatAssistant";
 
-const fontSans = Plus_Jakarta_Sans({
+const fontSans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const fontDisplay = Space_Grotesk({
+const fontDisplay = Outfit({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",

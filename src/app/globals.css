@@ -30,13 +30,14 @@ body {
   background: linear-gradient(180deg, #f6fbf3 0%, #ecf6e6 100%);
   color: #1a2b1a;
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-feature-settings: "ss01", "cv11";
-  letter-spacing: -0.005em;
+  font-feature-settings: "cv11", "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .font-display {
   font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   font-weight: 600;
 }
 
