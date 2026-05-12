@@ -35,12 +35,14 @@ export function analyzeBed(bed: GardenBed): CompatibilityIssue[] {
       if (pa.antagonists.includes(pb.id) || pb.antagonists.includes(pa.id)) {
         issues.push({
           level: "error",
+          kind: "antagonist",
           message: `${pa.name} and ${pb.name} should not be planted near each other.`,
           instanceIds: [a.instanceId, b.instanceId],
         });
       } else if (pa.companions.includes(pb.id) || pb.companions.includes(pa.id)) {
         issues.push({
           level: "info",
+          kind: "companion",
           message: `${pa.name} + ${pb.name} are great companions.`,
           instanceIds: [a.instanceId, b.instanceId],
         });
@@ -53,9 +55,10 @@ export function analyzeBed(bed: GardenBed): CompatibilityIssue[] {
     const plant = getPlant(p.plantId);
     if (!plant) continue;
     const condIssues = checkConditions(plant, bed.conditions);
-    for (const msg of condIssues) {
+    for (const { kind, msg } of condIssues) {
       issues.push({
         level: "warning",
+        kind,
         message: `${plant.name}: ${msg}`,
         instanceIds: [p.instanceId],
       });
@@ -70,6 +73,7 @@ export function analyzeBed(bed: GardenBed): CompatibilityIssue[] {
       if (cells < requiredCells) {
         issues.push({
           level: "warning",
+          kind: "spacing",
           message: `${plant.name} is crowded — needs ~${plant.spacingIn}\" spacing.`,
           instanceIds: [p.instanceId, other.instanceId],
         });
@@ -82,7 +86,7 @@ export function analyzeBed(bed: GardenBed): CompatibilityIssue[] {
   // panel doesn't flood with duplicates.
   const groups = new Map<string, CompatibilityIssue & { _count: number }>();
   for (const i of issues) {
-    const key = `${i.level}|${i.message}`;
+    const key = `${i.level}|${i.kind ?? ""}|${i.message}`;
     const existing = groups.get(key);
     if (existing) {
       existing._count += 1;
@@ -99,13 +103,22 @@ export function analyzeBed(bed: GardenBed): CompatibilityIssue[] {
   }));
 }
 
-export function checkConditions(plant: Plant, c: BedConditions): string[] {
-  const out: string[] = [];
+export function checkConditions(
+  plant: Plant,
+  c: BedConditions,
+): { kind: "sun" | "zone"; msg: string }[] {
+  const out: { kind: "sun" | "zone"; msg: string }[] = [];
   if (!sunCompatible(plant.sun, c.sun)) {
-    out.push(`prefers ${plant.sun.replace("-", " ")}, bed is ${c.sun.replace("-", " ")}.`);
+    out.push({
+      kind: "sun",
+      msg: `prefers ${plant.sun.replace("-", " ")}, bed is ${c.sun.replace("-", " ")}.`,
+    });
   }
   if (c.zone < plant.zones[0] || c.zone > plant.zones[1]) {
-    out.push(`hardiness zone ${plant.zones[0]}–${plant.zones[1]}, bed is zone ${c.zone}.`);
+    out.push({
+      kind: "zone",
+      msg: `hardiness zone ${plant.zones[0]}–${plant.zones[1]}, bed is zone ${c.zone}.`,
+    });
   }
   return out;
 }

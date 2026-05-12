@@ -84,4 +84,6 @@ export interface CompatibilityIssue {
   message: string;
   /** Instance ids involved. */
   instanceIds: string[];
+  /** Categorizes the issue so the UI can offer targeted auto-fixes. */
+  kind?: "antagonist" | "companion" | "spacing" | "sun" | "zone";
 }

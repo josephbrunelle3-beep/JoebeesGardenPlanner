@@ -15,7 +15,8 @@ import { usePlanner } from "@/lib/store";
 import { getPlant } from "@/lib/plants";
 import { analyzeBed } from "@/lib/companions";
 import { getFootprint } from "@/lib/footprint";
-import type { CompatibilityIssue, PlacedPlant } from "@/lib/types";
+import { getFixesForIssue, type FixOption } from "@/lib/fixes";
+import type { CompatibilityIssue, GardenBed, PlacedPlant } from "@/lib/types";
 
 const CELL_PX_DESKTOP = 64;
 const CELL_PX_MOBILE = 44;
@@ -329,6 +330,15 @@ function PlacedPlantChip({
 }
 
 function IssuesList({ issues }: { issues: CompatibilityIssue[] }) {
+  const bed = usePlanner((s) => s.bed);
+  const setConditions = usePlanner((s) => s.setConditions);
+  const movePlant = usePlanner((s) => s.movePlant);
+  const removePlant = usePlanner((s) => s.removePlant);
+
+  function runFix(fix: FixOption) {
+    fix.apply({ bed: usePlanner.getState().bed, setConditions, movePlant, removePlant });
+  }
+
   if (!issues.length) {
     return (
       <p className="text-xs text-leaf-700/70">
@@ -344,20 +354,60 @@ function IssuesList({ issues }: { issues: CompatibilityIssue[] }) {
   return (
     <div className="grid gap-2 text-xs">
       {errors.map((i, idx) => (
-        <div key={`e${idx}`} className="rounded border border-red-200 bg-red-50 px-3 py-2 text-red-800">
-          ⛔ {i.message}
-        </div>
+        <IssueRow key={`e${idx}`} issue={i} bed={bed} tone="error" onFix={runFix} />
       ))}
       {warnings.map((i, idx) => (
-        <div key={`w${idx}`} className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800">
-          ⚠ {i.message}
-        </div>
+        <IssueRow key={`w${idx}`} issue={i} bed={bed} tone="warning" onFix={runFix} />
       ))}
       {info.slice(0, 5).map((i, idx) => (
         <div key={`i${idx}`} className="rounded border border-leaf-200 bg-leaf-50 px-3 py-2 text-leaf-800">
           ✓ {i.message}
         </div>
       ))}
+    </div>
+  );
+}
+
+function IssueRow({
+  issue,
+  bed,
+  tone,
+  onFix,
+}: {
+  issue: CompatibilityIssue;
+  bed: GardenBed;
+  tone: "error" | "warning";
+  onFix: (f: FixOption) => void;
+}) {
+  const fixes = getFixesForIssue(issue, bed);
+  const wrap =
+    tone === "error"
+      ? "rounded border border-red-200 bg-red-50 px-3 py-2 text-red-800"
+      : "rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800";
+  const btnBase =
+    tone === "error"
+      ? "inline-flex items-center gap-1 rounded-full border border-red-300 bg-white px-2 py-0.5 text-[11px] font-medium text-red-700 hover:bg-red-100"
+      : "inline-flex items-center gap-1 rounded-full border border-amber-300 bg-white px-2 py-0.5 text-[11px] font-medium text-amber-800 hover:bg-amber-100";
+  return (
+    <div className={wrap}>
+      <div>
+        {tone === "error" ? "⛔" : "⚠"} {issue.message}
+      </div>
+      {fixes.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {fixes.map((f, i) => (
+            <button
+              key={i}
+              type="button"
+              title={f.detail}
+              onClick={() => onFix(f)}
+              className={btnBase}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
