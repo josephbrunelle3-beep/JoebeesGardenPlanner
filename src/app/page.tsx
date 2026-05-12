@@ -142,27 +142,7 @@ export default function Home() {
           />
         </section>
 
-        {/* CTA strip */}
-        <section className="mt-14 overflow-hidden rounded-3xl border border-leaf-200 bg-gradient-to-br from-leaf-700 via-leaf-700 to-leaf-800 p-6 text-leaf-50 shadow-lg sm:mt-20 sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="font-display text-xl font-bold sm:text-2xl">
-                Ready to dig in?
-              </h2>
-              <p className="mt-1 text-sm text-leaf-100/85 sm:text-base">
-                Open the planner, drop in your bed size, and you'll have a layout in under two minutes.
-              </p>
-            </div>
-            <Link
-              href="/planner"
-              className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-leaf-800 shadow-sm transition hover:bg-leaf-50"
-            >
-              Open the planner →
-            </Link>
-          </div>
-        </section>
-
-        <footer className="mt-10 border-t border-leaf-200 pt-5 text-xs text-leaf-700/70 sm:mt-14">
+        <footer className="mt-14 border-t border-leaf-200 pt-5 text-xs text-leaf-700/70 sm:mt-20">
           © {new Date().getFullYear()} JoeBees. Built with Next.js &amp; Claude — with a love of dirt under the fingernails.
         </footer>
       </div>
