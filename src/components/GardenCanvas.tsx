@@ -225,12 +225,13 @@ function PlacedPlantChip({
   const perRow = Math.round(Math.sqrt(fp.perCell));
   const showsGrid = fp.perCell > 1;
   const innerSize = fp.w * cellPx - 12;
-  // Aim for ~70% of the available slot.
+  // Aim to fit comfortably inside the chip; emoji glyphs render larger than
+  // their nominal font-size, so we leave headroom to avoid overflow.
   const dotFontSize = showsGrid
-    ? Math.max(10, Math.floor((innerSize / perRow) * 0.7))
+    ? Math.max(8, Math.floor((innerSize / perRow) * 0.55))
     : fp.w === 1
-      ? Math.floor(cellPx * 0.5)
-      : Math.min(72, Math.floor(cellPx * 0.5) + (innerSize - cellPx) * 0.4);
+      ? Math.floor(cellPx * 0.46)
+      : Math.min(64, Math.floor(cellPx * 0.46) + (innerSize - cellPx) * 0.32);
 
   return (
     <div
@@ -247,7 +248,7 @@ function PlacedPlantChip({
       title={`${plant.name} · ${fp.label}${
         fp.perCell > 1 ? ` (${fp.perCell}/sqft)` : ""
       }${issues.length ? "\n" + issues.map((i) => i.message).join("\n") : ""}`}
-      className={`group pointer-events-auto absolute flex items-center justify-center rounded-2xl bg-white/85 shadow ${ringClass} ${
+      className={`group pointer-events-auto absolute flex items-center justify-center overflow-hidden rounded-2xl bg-white/85 shadow ${ringClass} ${
         isDragging ? "opacity-40" : ""
       }`}
       style={{
@@ -270,14 +271,29 @@ function PlacedPlantChip({
             <span
               key={i}
               aria-hidden
-              style={{ fontSize: dotFontSize, lineHeight: 1 }}
+              className="flex items-center justify-center overflow-hidden"
+              style={{
+                fontSize: dotFontSize,
+                lineHeight: 1,
+                width: dotFontSize,
+                height: dotFontSize,
+              }}
             >
               {plant.emoji}
             </span>
           ))}
         </div>
       ) : (
-        <span aria-hidden style={{ fontSize: dotFontSize, lineHeight: 1 }}>
+        <span
+          aria-hidden
+          className="flex items-center justify-center overflow-hidden"
+          style={{
+            fontSize: dotFontSize,
+            lineHeight: 1,
+            width: dotFontSize,
+            height: dotFontSize,
+          }}
+        >
           {plant.emoji}
         </span>
       )}
