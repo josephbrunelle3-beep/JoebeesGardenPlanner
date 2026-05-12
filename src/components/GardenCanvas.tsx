@@ -18,19 +18,46 @@ import { getFootprint } from "@/lib/footprint";
 import { getFixesForIssue, type FixOption } from "@/lib/fixes";
 import type { CompatibilityIssue, GardenBed, PlacedPlant } from "@/lib/types";
 
-const CELL_PX_DESKTOP = 64;
-const CELL_PX_MOBILE = 44;
+const CELL_PX_MAX_DESKTOP = 64;
+const CELL_PX_MAX_MOBILE = 44;
+const CELL_PX_MIN = 28;
 
-function useCellPx() {
-  const [cell, setCell] = useState(CELL_PX_DESKTOP);
+/**
+ * Compute the largest cell size that lets the whole bed fit inside the
+ * available container width/height — so users don't have to scroll a giant
+ * bed. Falls back to a sensible default until the container is measured.
+ */
+function useCellPx(
+  bedW: number,
+  bedH: number,
+  hostRef: React.RefObject<HTMLDivElement | null>,
+) {
+  const [cell, setCell] = useState(CELL_PX_MAX_DESKTOP);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(max-width: 640px)");
-    const update = () => setCell(mq.matches ? CELL_PX_MOBILE : CELL_PX_DESKTOP);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
+    const el = hostRef.current;
+    if (!el) return;
+    const compute = () => {
+      const isMobile = window.matchMedia("(max-width: 640px)").matches;
+      const maxCell = isMobile ? CELL_PX_MAX_MOBILE : CELL_PX_MAX_DESKTOP;
+      // 24px of horizontal padding inside the bed container (p-3 = 12px × 2).
+      const availW = Math.max(0, el.clientWidth - 24);
+      // Cap height to ~70vh so the bed never pushes other UI off-screen.
+      const availH = Math.max(0, window.innerHeight * 0.7 - 24);
+      const byW = Math.floor(availW / Math.max(1, bedW));
+      const byH = Math.floor(availH / Math.max(1, bedH));
+      const next = Math.max(CELL_PX_MIN, Math.min(maxCell, byW, byH));
+      setCell((prev) => (prev === next ? prev : next));
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(el);
+    window.addEventListener("resize", compute);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", compute);
+    };
+  }, [bedW, bedH, hostRef]);
   return cell;
 }
 
@@ -49,7 +76,8 @@ export function GardenCanvas({
   const removePlant = usePlanner((s) => s.removePlant);
   const select = usePlanner((s) => s.select);
   const selected = usePlanner((s) => s.selectedInstanceId);
-  const CELL_PX = useCellPx();
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const CELL_PX = useCellPx(bed.width, bed.height, hostRef);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -119,11 +147,11 @@ export function GardenCanvas({
         <div className="relative">
           <CompassBadge />
           <div
-            className="relative inline-block max-w-full overflow-auto rounded-xl border border-soil-300 bg-soil-100 p-3 shadow-inner"
-            style={{ maxHeight: "70vh" }}
+            ref={hostRef}
+            className="relative max-w-full overflow-auto rounded-xl border border-soil-300 bg-soil-100 p-3 shadow-inner"
           >
             <div
-              className="relative grid"
+              className="relative mx-auto grid"
             style={{
               gridTemplateColumns: `repeat(${bed.width}, ${CELL_PX}px)`,
               gridTemplateRows: `repeat(${bed.height}, ${CELL_PX}px)`,
