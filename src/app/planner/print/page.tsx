@@ -53,6 +53,7 @@ export default function PrintSheetPage() {
   const [includeMap, setIncludeMap] = useState(true);
   const [includeCalendar, setIncludeCalendar] = useState(true);
   const [includeNotes, setIncludeNotes] = useState(true);
+  const [blackAndWhite, setBlackAndWhite] = useState(false);
 
   useEffect(() => {
     setBed(loadFromLocal());
@@ -79,7 +80,11 @@ export default function PrintSheetPage() {
   }
 
   return (
-    <div className="min-h-screen bg-leaf-50/40 print:bg-white">
+    <div
+      className={`min-h-screen bg-leaf-50/40 print:bg-white ${
+        blackAndWhite ? "print-bw" : ""
+      }`}
+    >
       {/* Toolbar — hidden when printing */}
       <div className="sticky top-0 z-10 border-b border-leaf-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur print:hidden">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center gap-3">
@@ -97,6 +102,7 @@ export default function PrintSheetPage() {
             <Toggle label="Calendar" checked={includeCalendar} onChange={setIncludeCalendar} />
             <Toggle label="Care notes" checked={includeNotes} onChange={setIncludeNotes} />
             <Toggle label="Shopping list" checked={includeShopping} onChange={setIncludeShopping} />
+            <Toggle label="Black & white" checked={blackAndWhite} onChange={setBlackAndWhite} />
             <button
               type="button"
               onClick={() => window.print()}
@@ -137,6 +143,28 @@ export default function PrintSheetPage() {
           @page { size: letter; margin: 0.5in; }
           .page-break { break-before: page; }
           .avoid-break { break-inside: avoid; }
+        }
+        /* Black & white mode — ink-saving, high-contrast monochrome. */
+        .print-bw,
+        .print-bw * {
+          color: #000 !important;
+          border-color: #000 !important;
+        }
+        .print-bw {
+          background: #fff !important;
+        }
+        .print-bw *:not(svg):not(svg *) {
+          background-color: transparent !important;
+          background-image: none !important;
+          box-shadow: none !important;
+        }
+        .print-bw svg { filter: grayscale(100%) contrast(1.2); }
+        .print-bw svg text { fill: #000 !important; }
+        .print-bw svg line { stroke: #000 !important; }
+        .print-bw svg rect { stroke: #000 !important; fill: #fff !important; }
+        .print-bw .btn-primary {
+          background: #000 !important;
+          color: #fff !important;
         }
       `}</style>
     </div>
