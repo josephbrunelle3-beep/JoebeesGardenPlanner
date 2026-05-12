@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Download, FolderDown, Save, Share2, Upload } from "lucide-react";
+import { Check, Download, FolderDown, Printer, Save, Share2, Upload } from "lucide-react";
 import { usePlanner } from "@/lib/store";
 import {
   downloadJson,
@@ -46,6 +46,14 @@ export function SaveExportMenu() {
   function doSave() {
     saveToLocal(bed);
     setStatus({ kind: "ok", msg: "Saved to this browser." });
+  }
+
+  function doPrint() {
+    // Persist the latest bed so the print page can read it from localStorage,
+    // then open the printable sheet in a new tab.
+    saveToLocal(bed);
+    window.open("/planner/print", "_blank", "noopener");
+    setOpen(false);
   }
 
   function doExport() {
@@ -109,6 +117,11 @@ export function SaveExportMenu() {
           className="absolute right-0 z-30 mt-1 w-56 overflow-hidden rounded-md border border-leaf-200 bg-white shadow-lg"
         >
           <MenuItem icon={<Save className="h-3.5 w-3.5" />} label="Save to this browser" onClick={doSave} />
+          <MenuItem
+            icon={<Printer className="h-3.5 w-3.5" />}
+            label="Printable garden sheet…"
+            onClick={doPrint}
+          />
           <MenuItem icon={<Download className="h-3.5 w-3.5" />} label="Export as JSON file" onClick={doExport} />
           <MenuItem icon={<Upload className="h-3.5 w-3.5" />} label="Import JSON file…" onClick={pickFile} />
           <MenuItem icon={<Share2 className="h-3.5 w-3.5" />} label="Copy JSON to clipboard" onClick={doShare} />
