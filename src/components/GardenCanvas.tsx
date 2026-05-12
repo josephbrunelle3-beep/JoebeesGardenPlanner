@@ -247,7 +247,7 @@ function PlacedPlantChip({
       title={`${plant.name} · ${fp.label}${
         fp.perCell > 1 ? ` (${fp.perCell}/sqft)` : ""
       }${issues.length ? "\n" + issues.map((i) => i.message).join("\n") : ""}`}
-      className={`pointer-events-auto absolute flex items-center justify-center rounded-2xl bg-white/85 shadow ${ringClass} ${
+      className={`group pointer-events-auto absolute flex items-center justify-center rounded-2xl bg-white/85 shadow ${ringClass} ${
         isDragging ? "opacity-40" : ""
       }`}
       style={{
@@ -281,7 +281,11 @@ function PlacedPlantChip({
           {plant.emoji}
         </span>
       )}
-      <span className="absolute top-0.5 left-0.5 rounded-full bg-leaf-700/80 px-1.5 py-0.5 text-[10px] font-medium text-white">
+      <span
+        className={`pointer-events-none absolute top-0.5 left-0.5 rounded-full bg-leaf-700/85 px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm transition-opacity ${
+          selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+        }`}
+      >
         {fp.label}
         {fp.perCell > 1 ? ` · ${fp.perCell}` : ""}
       </span>
