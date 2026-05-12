@@ -7,6 +7,7 @@ interface PlannerState {
   selectedInstanceId: string | null;
   pendingPrompt: string | null;
   setBed: (bed: GardenBed) => void;
+  loadBed: (bed: GardenBed) => void;
   resizeBed: (width: number, height: number) => void;
   setConditions: (c: Partial<BedConditions>) => void;
   addPlant: (plantId: string, x: number, y: number) => void;
@@ -37,6 +38,7 @@ export const usePlanner = create<PlannerState>((set) => ({
   pendingPrompt: null,
   setPendingPrompt: (p) => set({ pendingPrompt: p }),
   setBed: (bed) => set({ bed }),
+  loadBed: (bed) => set({ bed, selectedInstanceId: null }),
   resizeBed: (width, height) =>
     set((s) => {
       const w = Math.max(1, width);

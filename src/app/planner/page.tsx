@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Leaf, Trash2 } from "lucide-react";
 import { GardenCanvas } from "@/components/GardenCanvas";
 import { PlantPalette } from "@/components/PlantPalette";
@@ -12,12 +12,31 @@ import { PlantInfoPanel } from "@/components/PlantInfoPanel";
 import { SoilRecommendation } from "@/components/SoilRecommendation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
+import { SaveExportMenu } from "@/components/SaveExportMenu";
 import { usePlanner } from "@/lib/store";
+import { loadFromLocal, saveToLocal } from "@/lib/persistence";
 import type { Plant } from "@/lib/types";
 
 export default function PlannerPage() {
   const [pendingPlantId, setPendingPlantId] = useState<string | null>(null);
+  const bed = usePlanner((s) => s.bed);
   const clearBed = usePlanner((s) => s.clearBed);
+  const loadBed = usePlanner((s) => s.loadBed);
+  const hydrated = useRef(false);
+
+  // Restore saved bed (if any) on first mount.
+  useEffect(() => {
+    const saved = loadFromLocal();
+    if (saved) loadBed(saved);
+    hydrated.current = true;
+  }, [loadBed]);
+
+  // Auto-save bed changes after hydration (debounced).
+  useEffect(() => {
+    if (!hydrated.current) return;
+    const t = window.setTimeout(() => saveToLocal(bed), 400);
+    return () => window.clearTimeout(t);
+  }, [bed]);
 
   function handlePick(plant: Plant) {
     setPendingPlantId(plant.id);
@@ -48,6 +67,7 @@ export default function PlannerPage() {
           >
             <Trash2 className="h-3.5 w-3.5" /> Clear bed
           </button>
+          <SaveExportMenu />
           <ThemeToggle />
         </div>
       </header>
