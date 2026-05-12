@@ -152,13 +152,14 @@ export default function PrintSheetPage() {
         }
         .print-bw {
           background: #fff !important;
+          /* Strip color from emoji glyphs and raster images (logo, etc.). */
+          filter: grayscale(100%) contrast(1.05);
         }
         .print-bw *:not(svg):not(svg *) {
           background-color: transparent !important;
           background-image: none !important;
           box-shadow: none !important;
         }
-        .print-bw svg { filter: grayscale(100%) contrast(1.2); }
         .print-bw svg text { fill: #000 !important; }
         .print-bw svg line { stroke: #000 !important; }
         .print-bw svg rect { stroke: #000 !important; fill: #fff !important; }
