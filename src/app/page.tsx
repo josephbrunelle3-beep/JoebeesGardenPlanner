@@ -12,7 +12,7 @@ export default function Home() {
         </div>
         <Link
           href="/planner"
-          className="rounded-full bg-leaf-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-leaf-700 sm:px-5"
+          className="btn-primary rounded-full px-4 py-2 text-sm font-medium sm:px-5"
         >
           Open Planner
         </Link>
@@ -23,7 +23,7 @@ export default function Home() {
           <span className="inline-flex items-center gap-1 rounded-full bg-leaf-100 px-3 py-1 text-xs font-medium text-leaf-800">
             <Sprout className="h-3.5 w-3.5" /> Built for raised-bed beginners
           </span>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-leaf-900 sm:text-5xl">
+          <h1 className="font-display mt-4 text-3xl font-semibold tracking-tight text-leaf-900 sm:text-5xl">
             Grow your first raised bed with confidence.
           </h1>
           <p className="mt-4 text-base text-leaf-800/80 sm:mt-5 sm:text-lg">
@@ -34,7 +34,7 @@ export default function Home() {
           <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
             <Link
               href="/planner"
-              className="rounded-full bg-leaf-600 px-6 py-3 text-sm font-medium text-white shadow hover:bg-leaf-700"
+              className="btn-primary rounded-full px-6 py-3 text-sm font-medium"
             >
               Start planning
             </Link>
@@ -105,7 +105,7 @@ function Feature({
     <div className="rounded-2xl border border-leaf-200 bg-white p-6 shadow-sm">
       <div className="flex items-center gap-2 text-leaf-700">
         {icon}
-        <h3 className="font-semibold">{title}</h3>
+        <h3 className="font-display text-base font-semibold">{title}</h3>
       </div>
       <p className="mt-2 text-sm text-leaf-800/80">{body}</p>
     </div>

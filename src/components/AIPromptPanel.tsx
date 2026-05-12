@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
 import { usePlanner } from "@/lib/store";
 
-const GARDEN_PRESETS: { label: string; emoji: string; prompt: string }[] = [
+export const GARDEN_PRESETS: { label: string; emoji: string; prompt: string }[] = [
   {
     label: "Salsa",
     emoji: "🌶️",
@@ -70,10 +70,19 @@ const GARDEN_PRESETS: { label: string; emoji: string; prompt: string }[] = [
 export function AIPromptPanel() {
   const bed = usePlanner((s) => s.bed);
   const replacePlants = usePlanner((s) => s.replacePlants);
+  const pendingPrompt = usePlanner((s) => s.pendingPrompt);
+  const setPendingPrompt = usePlanner((s) => s.setPendingPrompt);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [rationale, setRationale] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (pendingPrompt) {
+      setPrompt(pendingPrompt);
+      setPendingPrompt(null);
+    }
+  }, [pendingPrompt, setPendingPrompt]);
 
   async function generate() {
     setLoading(true);
@@ -105,8 +114,8 @@ export function AIPromptPanel() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-2">
-      <h3 className="flex items-center gap-2 text-sm font-semibold text-leaf-900">
+    <div id="ai-prompt-panel" className="flex h-full flex-col gap-2">
+      <h3 className="font-display flex items-center gap-2 text-base font-semibold text-leaf-900">
         <Sparkles className="h-4 w-4 text-leaf-600" /> Design my bed
         <span className="ml-1 text-[11px] font-normal text-leaf-700/70">
           — describe what you want to grow
@@ -122,7 +131,7 @@ export function AIPromptPanel() {
         type="button"
         disabled={loading || !prompt.trim()}
         onClick={generate}
-        className="inline-flex items-center justify-center gap-2 rounded-md bg-leaf-600 px-3 py-2 text-xs font-medium text-white shadow hover:bg-leaf-700 disabled:opacity-50"
+        className="btn-primary inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium disabled:opacity-50"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
         {loading ? "Designing..." : "Generate layout"}

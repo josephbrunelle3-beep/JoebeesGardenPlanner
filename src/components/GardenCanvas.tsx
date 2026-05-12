@@ -98,7 +98,7 @@ export function GardenCanvas({
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-leaf-900">{bed.name}</h2>
+            <h2 className="font-display text-xl font-semibold text-leaf-900">{bed.name}</h2>
             <p className="text-xs text-leaf-700/70">
               {bed.width} × {bed.height} ft · drag plants in, or use the AI
             </p>
@@ -152,6 +152,25 @@ export function GardenCanvas({
                 onSelect={() => select(p.instanceId)}
               />
             ))}
+
+            {bed.plants.length === 0 && (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center"
+              >
+                <div className="flex items-center gap-2 opacity-50">
+                  <span className="text-4xl sm:text-5xl">🌱</span>
+                  <span className="text-4xl sm:text-5xl">🌼</span>
+                  <span className="text-4xl sm:text-5xl">🍅</span>
+                </div>
+                <p className="font-display text-base font-semibold text-leaf-900/70 sm:text-lg">
+                  Drop a plant here to get started
+                </p>
+                <p className="text-[11px] text-leaf-800/60 sm:text-xs">
+                  Drag from the palette, or pick a starter garden above.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

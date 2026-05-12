@@ -1,6 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { ChatAssistant } from "@/components/ChatAssistant";
+
+const fontSans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const fontDisplay = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  axes: ["SOFT", "opsz"],
+});
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://joebees.us";
@@ -58,7 +72,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${fontSans.variable} ${fontDisplay.variable}`}>
+      <head>
+        <script
+          // Run before paint to avoid a flash of the wrong theme.
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { const s = localStorage.getItem('joebees:theme'); const sys = window.matchMedia('(prefers-color-scheme: dark)').matches; if (s === 'dark' || (!s && sys)) document.documentElement.classList.add('dark'); } catch (e) {} })();`,
+          }}
+        />
+      </head>
       <body className="min-h-screen antialiased">
         {children}
         <ChatAssistant />

@@ -5,6 +5,7 @@ import { canPlace, findFreeSpot } from "./footprint";
 interface PlannerState {
   bed: GardenBed;
   selectedInstanceId: string | null;
+  pendingPrompt: string | null;
   setBed: (bed: GardenBed) => void;
   resizeBed: (width: number, height: number) => void;
   setConditions: (c: Partial<BedConditions>) => void;
@@ -14,6 +15,7 @@ interface PlannerState {
   clearBed: () => void;
   select: (id: string | null) => void;
   replacePlants: (plants: PlacedPlant[]) => void;
+  setPendingPrompt: (p: string | null) => void;
 }
 
 function uid() {
@@ -32,6 +34,8 @@ const initialBed: GardenBed = {
 export const usePlanner = create<PlannerState>((set) => ({
   bed: initialBed,
   selectedInstanceId: null,
+  pendingPrompt: null,
+  setPendingPrompt: (p) => set({ pendingPrompt: p }),
   setBed: (bed) => set({ bed }),
   resizeBed: (width, height) =>
     set((s) => {

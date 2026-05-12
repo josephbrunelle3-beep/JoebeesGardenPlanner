@@ -244,7 +244,7 @@ export function ChatAssistant() {
             <button
               type="submit"
               disabled={streaming || !input.trim()}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-leaf-600 text-white hover:bg-leaf-700 disabled:opacity-50"
+              className="btn-primary inline-flex h-8 w-8 items-center justify-center rounded-md disabled:opacity-50"
               aria-label="Send"
             >
               {streaming ? (

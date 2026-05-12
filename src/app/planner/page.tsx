@@ -10,6 +10,8 @@ import { AIPromptPanel } from "@/components/AIPromptPanel";
 import { CalendarView } from "@/components/CalendarView";
 import { PlantInfoPanel } from "@/components/PlantInfoPanel";
 import { SoilRecommendation } from "@/components/SoilRecommendation";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { OnboardingWizard } from "@/components/OnboardingWizard";
 import { usePlanner } from "@/lib/store";
 import type { Plant } from "@/lib/types";
 
@@ -24,13 +26,13 @@ export default function PlannerPage() {
   return (
     <main className="mx-auto flex max-w-[1500px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4">
       <header className="flex flex-wrap items-center justify-between gap-2">
-        <Link href="/" className="flex items-center gap-2 text-leaf-700">
+        <Link href="/" className="flex items-center gap-2 text-leaf-700 dark:text-leaf-200">
           <Leaf className="h-5 w-5" />
           <span className="font-semibold">JoeBees</span>
         </Link>
         <div className="flex flex-wrap items-center gap-2">
           {pendingPlantId && (
-            <span className="rounded-full bg-leaf-100 px-3 py-1 text-xs text-leaf-800">
+            <span className="rounded-full bg-leaf-100 px-3 py-1 text-xs text-leaf-800 dark:bg-night-100 dark:text-leaf-100">
               Click a cell to place — or{" "}
               <button
                 className="underline"
@@ -42,15 +44,16 @@ export default function PlannerPage() {
           )}
           <button
             onClick={clearBed}
-            className="inline-flex items-center gap-1 rounded-md border border-leaf-200 bg-white px-3 py-1.5 text-xs font-medium text-leaf-800 hover:bg-leaf-50"
+            className="inline-flex items-center gap-1 rounded-md border border-leaf-200 bg-white px-3 py-1.5 text-xs font-medium text-leaf-800 hover:bg-leaf-50 dark:border-night-50 dark:bg-night-200 dark:text-leaf-100 dark:hover:bg-night-100"
           >
             <Trash2 className="h-3.5 w-3.5" /> Clear bed
           </button>
+          <ThemeToggle />
         </div>
       </header>
 
       {/* Setup + Planner — one consolidated card */}
-      <section className="rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4">
+      <section className="rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4 dark:border-night-50 dark:bg-night-200">
         <div className="grid gap-6 md:grid-cols-2">
           <AIPromptPanel />
           <Conditions />
@@ -70,7 +73,7 @@ export default function PlannerPage() {
       </section>
 
       {/* Less critical info — beneath the planner */}
-      <section className="rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4">
+      <section className="rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4 dark:border-night-50 dark:bg-night-200">
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           <SoilRecommendation />
           <PlantInfoPanel />
@@ -79,6 +82,7 @@ export default function PlannerPage() {
           </div>
         </div>
       </section>
+      <OnboardingWizard />
     </main>
   );
 }

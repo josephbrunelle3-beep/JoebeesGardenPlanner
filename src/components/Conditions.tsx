@@ -53,7 +53,7 @@ export function Conditions() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-semibold text-leaf-900">Your raised bed</h3>
+      <h3 className="font-display text-base font-semibold text-leaf-900">Your raised bed</h3>
 
       <div className="grid grid-cols-2 gap-2">
         <Row label="Sun" hint="Hours of direct sun your spot gets.">
@@ -108,7 +108,7 @@ export function Conditions() {
             type="button"
             disabled={zipLoading || zip.length !== 5}
             onClick={lookupZip}
-            className="inline-flex items-center justify-center rounded-md bg-leaf-600 px-2 py-1 text-[11px] font-medium text-white hover:bg-leaf-700 disabled:opacity-50"
+            className="btn-primary inline-flex items-center justify-center rounded-md px-2 py-1 text-[11px] font-medium disabled:opacity-50"
           >
             {zipLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Find"}
           </button>

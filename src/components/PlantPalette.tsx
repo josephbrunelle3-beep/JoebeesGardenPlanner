@@ -11,13 +11,43 @@ import type { Plant, PlantCategory } from "@/lib/types";
 
 const CATEGORY_META: Record<
   PlantCategory,
-  { label: string; emoji: string; order: number }
+  { label: string; emoji: string; order: number; tint: string; accent: string }
 > = {
-  vegetable: { label: "Vegetables", emoji: "🥕", order: 0 },
-  fruit: { label: "Fruit", emoji: "🍓", order: 1 },
-  herb: { label: "Herbs", emoji: "🌿", order: 2 },
-  flower: { label: "Flowers", emoji: "🌼", order: 3 },
-  "cover-crop": { label: "Cover crops", emoji: "🌱", order: 4 },
+  vegetable: {
+    label: "Vegetables",
+    emoji: "🥕",
+    order: 0,
+    tint: "bg-emerald-50/70",
+    accent: "bg-emerald-400",
+  },
+  fruit: {
+    label: "Fruit",
+    emoji: "🍓",
+    order: 1,
+    tint: "bg-rose-50/70",
+    accent: "bg-rose-400",
+  },
+  herb: {
+    label: "Herbs",
+    emoji: "🌿",
+    order: 2,
+    tint: "bg-lime-50/70",
+    accent: "bg-lime-500",
+  },
+  flower: {
+    label: "Flowers",
+    emoji: "🌼",
+    order: 3,
+    tint: "bg-violet-50/70",
+    accent: "bg-violet-400",
+  },
+  "cover-crop": {
+    label: "Cover crops",
+    emoji: "🌱",
+    order: 4,
+    tint: "bg-amber-50/70",
+    accent: "bg-amber-400",
+  },
 };
 
 // Sub-grouping inside a top-level category.
@@ -196,7 +226,7 @@ export function PlantPalette({
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-semibold text-leaf-900">Browse plants</h3>
+      <h3 className="font-display text-base font-semibold text-leaf-900">Browse plants</h3>
       <p className="text-xs text-leaf-700/70">
         Open a category, then drag a plant onto the bed (or click it, then click a cell).
       </p>
@@ -225,12 +255,16 @@ export function PlantPalette({
           return (
             <div
               key={cat}
-              className="rounded-lg border border-leaf-200 bg-white"
+              className={`relative overflow-hidden rounded-lg border border-leaf-200 ${meta.tint}`}
             >
+              <span
+                aria-hidden
+                className={`absolute inset-y-0 left-0 w-1 ${meta.accent}`}
+              />
               <button
                 type="button"
                 onClick={() => toggle(cat)}
-                className="flex w-full items-center justify-between gap-2 px-2 py-1.5 text-left text-xs font-medium text-leaf-900 hover:bg-leaf-50"
+                className="flex w-full items-center justify-between gap-2 pl-3 pr-2 py-1.5 text-left text-xs font-medium text-leaf-900 hover:bg-white/40"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-base">{meta.emoji}</span>
@@ -246,7 +280,7 @@ export function PlantPalette({
                 )}
               </button>
               {expanded && (
-                <div className="flex flex-col gap-1.5 border-t border-leaf-100 p-1.5">
+                <div className="flex flex-col gap-1.5 border-t border-leaf-100 bg-white/70 p-1.5">
                   {showSubs ? (
                     subs.map((sub) => (
                       <div key={sub.label} className="flex flex-col gap-1">

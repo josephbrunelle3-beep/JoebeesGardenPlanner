@@ -33,7 +33,7 @@ export function CalendarView() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-semibold text-leaf-900">Seasonal calendar</h3>
+      <h3 className="font-display text-base font-semibold text-leaf-900">Seasonal calendar</h3>
       <div className="overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-y-1 text-xs">
           <thead>
