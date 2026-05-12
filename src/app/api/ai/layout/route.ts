@@ -123,7 +123,11 @@ Layout rules:
 
 Output rules:
 - Output JSON only. No prose outside the JSON.
-- Include a short rationale (1-3 sentences) explaining the strategy.
+- Write a SHORT, friendly rationale (1–2 sentences, ~25 words max) aimed at
+  a brand-new gardener. Plain language, no coordinates, no jargon like
+  "antagonist" or "y=0". Focus on what the gardener gets out of the layout
+  (e.g. "Tall sunflowers shade the lettuce in the afternoon, basil keeps
+  pests off the tomatoes").
 
 JSON shape:
 {
