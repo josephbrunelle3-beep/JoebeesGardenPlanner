@@ -135,9 +135,10 @@ True-to-size sizing rules — VERY IMPORTANT:
   the per-cell count automatically.
 - Keep coordinates inside the grid: 0 <= x, 0 <= y, and
   x + footprintCells <= width, y + footprintCells <= height.
-- Leave breathing room. Do not fill every cell — a good beginner bed uses
-  60–80% of cells, with paths/access in mind. Aim for 8–20 placements total
-  on a typical 4×8 bed.
+- Leave breathing room, but fill the bed well. A good beginner bed uses
+  80–95% of cells. Aim for at least width*height*0.8 placements (for a
+  typical 4×8 bed that's ~25–30 plants). Empty cells are fine only to
+  separate antagonists or leave a narrow access path on very wide beds.
 
 Companion rules — ALSO CRITICAL:
 - Before finalizing, double-check that NO two plants whose footprints are

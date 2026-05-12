@@ -26,6 +26,15 @@ body {
   height: 100%;
 }
 
+/* Mobile safety net — prevent any long word (URLs, IDs, fused tokens) from
+   forcing a card or grid cell to extend past the viewport. */
+@media (max-width: 640px) {
+  p, li, dd, span, h1, h2, h3, h4 {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
 body {
   background: linear-gradient(180deg, #f6fbf3 0%, #ecf6e6 100%);
   color: #1a2b1a;

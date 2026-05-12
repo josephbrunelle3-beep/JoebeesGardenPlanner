@@ -42,7 +42,7 @@ export default function PlannerPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-[1500px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4">
+    <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 overflow-x-hidden px-3 py-3 sm:px-4 sm:py-4">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <Link href="/" className="flex items-center gap-2 text-leaf-700">
           <Leaf className="h-5 w-5" />
@@ -71,31 +71,41 @@ export default function PlannerPage() {
       </header>
 
       {/* Setup + Planner — one consolidated card */}
-      <section className="rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4">
+      <section className="overflow-hidden rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4">
         <div className="grid gap-6 md:grid-cols-2">
-          <AIPromptPanel />
-          <Conditions />
+          <div className="min-w-0">
+            <AIPromptPanel />
+          </div>
+          <div className="min-w-0">
+            <Conditions />
+          </div>
         </div>
 
         <div className="my-4 h-px bg-leaf-100" />
 
         <div className="grid gap-4 lg:grid-cols-[1fr_240px]">
-          <GardenCanvas
-            pendingPlantId={pendingPlantId}
-            onConsumePending={() => setPendingPlantId(null)}
-          />
-          <div className="lg:max-h-[72vh] lg:overflow-y-auto lg:pr-1">
+          <div className="min-w-0">
+            <GardenCanvas
+              pendingPlantId={pendingPlantId}
+              onConsumePending={() => setPendingPlantId(null)}
+            />
+          </div>
+          <div className="min-w-0 lg:max-h-[72vh] lg:overflow-y-auto lg:pr-1">
             <PlantPalette onPick={handlePick} />
           </div>
         </div>
       </section>
 
       {/* Less critical info — beneath the planner */}
-      <section className="rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4">
+      <section className="overflow-hidden rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4">
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          <SoilRecommendation />
-          <PlantInfoPanel />
-          <div className="md:col-span-2 xl:col-span-1">
+          <div className="min-w-0">
+            <SoilRecommendation />
+          </div>
+          <div className="min-w-0">
+            <PlantInfoPanel />
+          </div>
+          <div className="min-w-0 md:col-span-2 xl:col-span-1">
             <CalendarView />
           </div>
         </div>

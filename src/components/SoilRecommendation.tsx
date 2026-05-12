@@ -10,7 +10,7 @@ export function SoilRecommendation() {
   const rec = recommendSoil(bed);
 
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-amber-200 bg-amber-50/60 p-3">
+    <div className="flex flex-col gap-2 rounded-md border border-amber-200 bg-amber-50/60 p-3 break-words">
       <div className="flex items-center gap-1.5">
         <Sparkles className="h-3.5 w-3.5 text-amber-700" />
         <h3 className="font-display text-base font-semibold text-amber-900">
