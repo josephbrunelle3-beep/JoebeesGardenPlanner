@@ -95,12 +95,34 @@ True-to-size sizing rules — VERY IMPORTANT:
   the per-cell count automatically.
 - Keep coordinates inside the grid: 0 <= x, 0 <= y, and
   x + footprintCells <= width, y + footprintCells <= height.
+- Leave breathing room. Do not fill every cell — a good beginner bed uses
+  60–80% of cells, with paths/access in mind. Aim for 8–20 placements total
+  on a typical 4×8 bed.
 
-Other rules:
-- Output JSON only. No prose outside the JSON.
+Companion rules — ALSO CRITICAL:
+- Before finalizing, double-check that NO two plants whose footprints are
+  within 2 cells of each other appear in each other's "antagonists" list.
+  If a conflict exists, REMOVE one of them or relocate it >= 3 cells away.
+- Common antagonist traps to avoid: brassicas next to tomato/pepper/strawberry,
+  fennel next to almost anything, onion/garlic family next to bean/pea,
+  dill next to carrot, potato next to tomato/cucumber/squash/sunflower.
+- Maximize companion bonuses where present (basil+tomato, carrot+onion,
+  marigold near nightshades, beans climbing corn, etc.).
+
+Condition rules:
 - Respect the bed's growing conditions (sun, soil, pH, USDA zone).
-- Maximize companion-planting benefits; never place two antagonists adjacent.
-- Group tall plants (corn, sunflower) to the north (low y) so they don't shade shorter plants.
+- Skip plants whose zone range excludes the bed's zone.
+- Skip full-sun-only plants if the bed is part-shade or shade.
+
+Layout rules:
+- Group tall plants (corn, sunflower, pole beans on trellis) along the back
+  (lowest y values) so they don't shade shorter plants.
+- Put low/edge-friendly plants (lettuce, strawberry, herbs) along the front
+  (highest y values).
+- Cluster companions, separate antagonists.
+
+Output rules:
+- Output JSON only. No prose outside the JSON.
 - Include a short rationale (1-3 sentences) explaining the strategy.
 
 JSON shape:
@@ -143,7 +165,7 @@ Return the JSON layout now.`;
 
     // Filter to known plants and clamp coords.
     const knownIds = new Set(PLANTS.map((p) => p.id));
-    const placements: PlacedPlant[] = result.data.plants
+    const initial: PlacedPlant[] = result.data.plants
       .filter((p) => knownIds.has(p.plantId))
       .map((p) => ({
         instanceId: Math.random().toString(36).slice(2, 10),
@@ -151,6 +173,58 @@ Return the JSON layout now.`;
         x: Math.min(width - 1, Math.max(0, p.x)),
         y: Math.min(height - 1, Math.max(0, p.y)),
       }));
+
+    // --- Safety net: clean up obvious mistakes the AI sometimes makes. ---
+    const plantById = new Map(PLANTS.map((p) => [p.id, p]));
+    const footprintCells = (id: string) => {
+      const sp = plantById.get(id)?.spacingIn ?? 12;
+      return sp > 12 ? Math.ceil(sp / 12) : 1;
+    };
+    const occupied = new Set<string>();
+    const placements: PlacedPlant[] = [];
+    const cheby = (a: PlacedPlant, b: PlacedPlant) =>
+      Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+
+    for (const p of initial) {
+      const fp = footprintCells(p.plantId);
+      if (p.x + fp > width || p.y + fp > height) continue;
+      // Reject overlap with already-accepted placements.
+      let overlaps = false;
+      for (let dx = 0; dx < fp; dx++) {
+        for (let dy = 0; dy < fp; dy++) {
+          if (occupied.has(`${p.x + dx}:${p.y + dy}`)) {
+            overlaps = true;
+            break;
+          }
+        }
+        if (overlaps) break;
+      }
+      if (overlaps) continue;
+      // Reject antagonist within 2 cells of an already-accepted placement.
+      const plant = plantById.get(p.plantId);
+      if (!plant) continue;
+      let antagonistNear = false;
+      for (const acc of placements) {
+        if (cheby(p, acc) > 2) continue;
+        const other = plantById.get(acc.plantId);
+        if (!other) continue;
+        if (
+          plant.antagonists.includes(other.id) ||
+          other.antagonists.includes(plant.id)
+        ) {
+          antagonistNear = true;
+          break;
+        }
+      }
+      if (antagonistNear) continue;
+      // Accept.
+      placements.push(p);
+      for (let dx = 0; dx < fp; dx++) {
+        for (let dy = 0; dy < fp; dy++) {
+          occupied.add(`${p.x + dx}:${p.y + dy}`);
+        }
+      }
+    }
 
     return NextResponse.json({
       rationale: result.data.rationale,
