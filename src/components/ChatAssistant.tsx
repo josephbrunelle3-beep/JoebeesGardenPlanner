@@ -100,7 +100,7 @@ export function ChatAssistant() {
           type="button"
           onClick={() => setOpen(false)}
           aria-label="Close garden assistant"
-          className="fixed bottom-5 right-5 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full bg-leaf-700 text-white shadow-lg hover:bg-leaf-800"
+          className="fixed bottom-4 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full bg-leaf-700 text-white shadow-lg hover:bg-leaf-800 sm:bottom-5 sm:right-5"
         >
           <X className="h-5 w-5" />
         </button>
@@ -133,9 +133,9 @@ export function ChatAssistant() {
             v.currentTime = 0;
           }}
           aria-label="Open JoeBee assistant"
-          className="group fixed bottom-5 right-5 z-40 flex items-center gap-3 rounded-full bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-400 py-2 pl-2 pr-5 text-amber-950 shadow-xl ring-2 ring-amber-500/40 transition hover:scale-105 hover:shadow-2xl"
+          className="group fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-400 p-1 pr-2 text-amber-950 shadow-xl ring-2 ring-amber-500/40 transition hover:scale-105 hover:shadow-2xl sm:bottom-5 sm:right-5 sm:gap-3 sm:py-2 sm:pl-2 sm:pr-5"
         >
-          <span className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white shadow-inner ring-2 ring-amber-400">
+          <span className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white shadow-inner ring-2 ring-amber-400 sm:h-14 sm:w-14">
             <video
               ref={videoRef}
               src="/JOEBEE.mp4"
@@ -147,7 +147,7 @@ export function ChatAssistant() {
               className="absolute inset-0 h-full w-full scale-125 object-cover object-center"
             />
           </span>
-          <span className="flex flex-col items-start leading-tight">
+          <span className="hidden flex-col items-start leading-tight sm:flex">
             <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-800/80">
               Ask
             </span>
@@ -157,7 +157,7 @@ export function ChatAssistant() {
       )}
 
       {open && (
-        <div className="fixed bottom-20 right-5 z-40 flex h-[min(70vh,560px)] w-[min(92vw,380px)] flex-col overflow-hidden rounded-2xl border border-leaf-200 bg-white shadow-2xl">
+        <div className="fixed bottom-20 right-3 left-3 z-40 flex h-[min(70vh,560px)] flex-col overflow-hidden rounded-2xl border border-leaf-200 bg-white shadow-2xl sm:left-auto sm:right-5 sm:w-[min(92vw,380px)]">
           <header className="flex items-center gap-2 border-b border-leaf-100 bg-leaf-50 px-3 py-2">
             <span className="relative flex h-8 w-8 overflow-hidden rounded-full bg-white ring-1 ring-amber-300">
               <video

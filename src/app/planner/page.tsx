@@ -22,13 +22,13 @@ export default function PlannerPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-[1500px] flex-col gap-4 px-4 py-4">
-      <header className="flex items-center justify-between">
+    <main className="mx-auto flex max-w-[1500px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4">
+      <header className="flex flex-wrap items-center justify-between gap-2">
         <Link href="/" className="flex items-center gap-2 text-leaf-700">
           <Leaf className="h-5 w-5" />
           <span className="font-semibold">JoeBees</span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {pendingPlantId && (
             <span className="rounded-full bg-leaf-100 px-3 py-1 text-xs text-leaf-800">
               Click a cell to place — or{" "}
@@ -50,15 +50,15 @@ export default function PlannerPage() {
       </header>
 
       {/* Setup + Planner — one consolidated card */}
-      <section className="rounded-2xl border border-leaf-200 bg-white p-4 shadow-sm">
-        <div className="grid gap-6 sm:grid-cols-2">
+      <section className="rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4">
+        <div className="grid gap-6 md:grid-cols-2">
           <AIPromptPanel />
           <Conditions />
         </div>
 
         <div className="my-4 h-px bg-leaf-100" />
 
-        <div className="grid gap-4 sm:grid-cols-[1fr_220px]">
+        <div className="grid gap-4 lg:grid-cols-[1fr_240px]">
           <GardenCanvas
             pendingPlantId={pendingPlantId}
             onConsumePending={() => setPendingPlantId(null)}
@@ -70,11 +70,11 @@ export default function PlannerPage() {
       </section>
 
       {/* Less critical info — beneath the planner */}
-      <section className="rounded-2xl border border-leaf-200 bg-white p-4 shadow-sm">
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      <section className="rounded-2xl border border-leaf-200 bg-white p-3 shadow-sm sm:p-4">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           <SoilRecommendation />
           <PlantInfoPanel />
-          <div className="sm:col-span-2 xl:col-span-1">
+          <div className="md:col-span-2 xl:col-span-1">
             <CalendarView />
           </div>
         </div>

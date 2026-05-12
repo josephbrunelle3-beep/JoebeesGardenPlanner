@@ -259,9 +259,8 @@ export function PlantPalette({
                           </span>
                           <span className="ml-1 h-px flex-1 bg-leaf-100" />
                         </div>
-                        <div className="grid grid-cols-3 gap-1">
-                          {sub.plants.map((p) => (
-                            <PaletteItem
+                        <div className="grid grid-cols-4 gap-1 sm:grid-cols-5 lg:grid-cols-3">
+                          {sub.plants.map((p) => (                            <PaletteItem
                               key={p.id}
                               plant={p}
                               onPick={onPick}
@@ -272,9 +271,8 @@ export function PlantPalette({
                       </div>
                     ))
                   ) : (
-                    <div className="grid grid-cols-3 gap-1">
-                      {plants.map((p) => (
-                        <PaletteItem
+                    <div className="grid grid-cols-4 gap-1 sm:grid-cols-5 lg:grid-cols-3">
+                      {plants.map((p) => (                        <PaletteItem
                           key={p.id}
                           plant={p}
                           onPick={onPick}

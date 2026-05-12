@@ -70,9 +70,7 @@ const GARDEN_PRESETS: { label: string; emoji: string; prompt: string }[] = [
 export function AIPromptPanel() {
   const bed = usePlanner((s) => s.bed);
   const replacePlants = usePlanner((s) => s.replacePlants);
-  const [prompt, setPrompt] = useState(
-    "Salsa garden: tomatoes, peppers, onions, cilantro — beginner friendly.",
-  );
+  const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [rationale, setRationale] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

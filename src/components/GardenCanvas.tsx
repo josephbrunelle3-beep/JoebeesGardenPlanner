@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DndContext,
   PointerSensor,
@@ -17,7 +17,21 @@ import { analyzeBed } from "@/lib/companions";
 import { getFootprint } from "@/lib/footprint";
 import type { CompatibilityIssue, PlacedPlant } from "@/lib/types";
 
-const CELL_PX = 64;
+const CELL_PX_DESKTOP = 64;
+const CELL_PX_MOBILE = 44;
+
+function useCellPx() {
+  const [cell, setCell] = useState(CELL_PX_DESKTOP);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 640px)");
+    const update = () => setCell(mq.matches ? CELL_PX_MOBILE : CELL_PX_DESKTOP);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return cell;
+}
 
 export function GardenCanvas({
   pendingPlantId,
@@ -34,6 +48,7 @@ export function GardenCanvas({
   const removePlant = usePlanner((s) => s.removePlant);
   const select = usePlanner((s) => s.select);
   const selected = usePlanner((s) => s.selectedInstanceId);
+  const CELL_PX = useCellPx();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -121,6 +136,7 @@ export function GardenCanvas({
                   key={`${x}-${y}`}
                   x={x}
                   y={y}
+                  size={CELL_PX}
                   onClick={() => handleCellClick(x, y)}
                 />
               );
@@ -130,6 +146,7 @@ export function GardenCanvas({
               <PlacedPlantChip
                 key={p.instanceId}
                 placed={p}
+                cellPx={CELL_PX}
                 selected={selected === p.instanceId}
                 issues={issuesByInstance.get(p.instanceId) ?? []}
                 onSelect={() => select(p.instanceId)}
@@ -148,10 +165,12 @@ export function GardenCanvas({
 function Cell({
   x,
   y,
+  size,
   onClick,
 }: {
   x: number;
   y: number;
+  size: number;
   onClick: () => void;
 }) {
   const { isOver, setNodeRef } = useDroppable({
@@ -165,18 +184,20 @@ function Cell({
       className={`soil-bg cursor-pointer border border-soil-300/40 transition ${
         isOver ? "ring-2 ring-leaf-500 ring-inset" : ""
       }`}
-      style={{ width: CELL_PX, height: CELL_PX }}
+      style={{ width: size, height: size }}
     />
   );
 }
 
 function PlacedPlantChip({
   placed,
+  cellPx,
   selected,
   issues,
   onSelect,
 }: {
   placed: PlacedPlant;
+  cellPx: number;
   selected: boolean;
   issues: CompatibilityIssue[];
   onSelect: () => void;
@@ -203,13 +224,13 @@ function PlacedPlantChip({
   // 16 carrots actually look like 16 carrots. perRow = sqrt(perCell).
   const perRow = Math.round(Math.sqrt(fp.perCell));
   const showsGrid = fp.perCell > 1;
-  const innerSize = fp.w * CELL_PX - 12;
+  const innerSize = fp.w * cellPx - 12;
   // Aim for ~70% of the available slot.
   const dotFontSize = showsGrid
     ? Math.max(10, Math.floor((innerSize / perRow) * 0.7))
     : fp.w === 1
-      ? 32
-      : Math.min(72, 32 + (innerSize - CELL_PX) * 0.4);
+      ? Math.floor(cellPx * 0.5)
+      : Math.min(72, Math.floor(cellPx * 0.5) + (innerSize - cellPx) * 0.4);
 
   return (
     <div
@@ -230,10 +251,10 @@ function PlacedPlantChip({
         isDragging ? "opacity-40" : ""
       }`}
       style={{
-        left: placed.x * CELL_PX + 6,
-        top: placed.y * CELL_PX + 6,
-        width: fp.w * CELL_PX - 12,
-        height: fp.h * CELL_PX - 12,
+        left: placed.x * cellPx + 6,
+        top: placed.y * cellPx + 6,
+        width: fp.w * cellPx - 12,
+        height: fp.h * cellPx - 12,
         cursor: "grab",
       }}
     >

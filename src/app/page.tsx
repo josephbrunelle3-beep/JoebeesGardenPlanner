@@ -4,7 +4,7 @@ import { Leaf, MessageCircle, Sprout, Sun } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-16">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-leaf-700">
           <Leaf className="h-6 w-6" />
@@ -12,26 +12,26 @@ export default function Home() {
         </div>
         <Link
           href="/planner"
-          className="rounded-full bg-leaf-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-leaf-700"
+          className="rounded-full bg-leaf-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-leaf-700 sm:px-5"
         >
           Open Planner
         </Link>
       </header>
 
-      <section className="mt-20 grid items-center gap-12 md:grid-cols-2">
+      <section className="mt-10 grid items-center gap-8 sm:mt-20 sm:gap-12 md:grid-cols-2">
         <div>
           <span className="inline-flex items-center gap-1 rounded-full bg-leaf-100 px-3 py-1 text-xs font-medium text-leaf-800">
             <Sprout className="h-3.5 w-3.5" /> Built for raised-bed beginners
           </span>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-leaf-900 sm:text-5xl">
+          <h1 className="mt-4 text-3xl font-bold tracking-tight text-leaf-900 sm:text-5xl">
             Grow your first raised bed with confidence.
           </h1>
-          <p className="mt-5 text-lg text-leaf-800/80">
+          <p className="mt-4 text-base text-leaf-800/80 sm:mt-5 sm:text-lg">
             A friendly planning tool and built-in gardening tutor. Get a smart
             layout in seconds, then ask <strong>JoeBee</strong> — your AI
             garden buddy — anything: soil mixes, watering, pests, what to plant when.
           </p>
-          <div className="mt-8 flex gap-3">
+          <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
             <Link
               href="/planner"
               className="rounded-full bg-leaf-600 px-6 py-3 text-sm font-medium text-white shadow hover:bg-leaf-700"
@@ -67,7 +67,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="features" className="mt-24 grid gap-6 md:grid-cols-3">
+      <section id="features" className="mt-16 grid gap-6 sm:mt-24 md:grid-cols-3">
         <Feature
           icon={<Image src="/joebee.png" alt="JoeBee" width={24} height={24} className="h-6 w-6" />}
           title="Ask JoeBee anything"
@@ -85,7 +85,7 @@ export default function Home() {
         />
       </section>
 
-      <footer className="mt-24 border-t border-leaf-200 pt-6 text-sm text-leaf-700/70">
+      <footer className="mt-16 border-t border-leaf-200 pt-6 text-sm text-leaf-700/70 sm:mt-24">
         © {new Date().getFullYear()} JoeBees. Built with Next.js & Claude — with a love of dirt under the fingernails.
       </footer>
     </main>
