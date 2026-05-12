@@ -73,12 +73,7 @@ export default function Home() {
           {/* Hero bed preview */}
           <div className="relative">
             <div className="rounded-3xl border border-leaf-200 bg-white p-4 shadow-xl shadow-leaf-900/5 sm:p-5">
-              <div className="flex items-center justify-between pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="inline-block h-2 w-2 rounded-full bg-rose-400" />
-                  <span className="inline-block h-2 w-2 rounded-full bg-amber-400" />
-                  <span className="inline-block h-2 w-2 rounded-full bg-leaf-500" />
-                </div>
+              <div className="flex items-center justify-end pb-3">
                 <span className="rounded-full bg-leaf-100 px-2 py-0.5 text-[10px] font-medium text-leaf-800">
                   4 × 6 ft · zone 6
                 </span>
