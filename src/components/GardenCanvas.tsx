@@ -116,13 +116,14 @@ export function GardenCanvas({
           )}
         </div>
 
-        <div
-          className="relative inline-block max-w-full overflow-auto rounded-xl border border-soil-300 bg-soil-100 p-3 shadow-inner"
-          style={{ maxHeight: "70vh" }}
-        >
+        <div className="relative">
           <CompassBadge />
           <div
-            className="relative grid"
+            className="relative inline-block max-w-full overflow-auto rounded-xl border border-soil-300 bg-soil-100 p-3 shadow-inner"
+            style={{ maxHeight: "70vh" }}
+          >
+            <div
+              className="relative grid"
             style={{
               gridTemplateColumns: `repeat(${bed.width}, ${CELL_PX}px)`,
               gridTemplateRows: `repeat(${bed.height}, ${CELL_PX}px)`,
@@ -174,6 +175,7 @@ export function GardenCanvas({
               </div>
             )}
           </div>
+          </div>
         </div>
 
         <IssuesList issues={issues} />
@@ -184,20 +186,38 @@ export function GardenCanvas({
 }
 
 /**
- * North compass + a hover/tap explainer. Points to the top of the grid so
+ * North compass + click-to-open explainer. Points to the top of the grid so
  * users place tall plants (which we put at low y) on the north side, where
  * they won't shade the rest of the bed.
+ *
+ * Click-only (no hover) so it doesn't flicker while the user scrolls the
+ * adjacent bed canvas with the mouse wheel.
  */
 function CompassBadge() {
   const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
   return (
-    <div className="absolute right-3 top-3 z-10">
+    <div ref={wrapRef} className="absolute right-3 top-3 z-20">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
         aria-label="North indicator — tap for orientation tips"
+        aria-expanded={open}
         className="group flex h-14 w-14 flex-col items-center justify-center rounded-full border border-leaf-300 bg-white/95 shadow-md backdrop-blur-sm transition hover:shadow-lg"
       >
         <span className="font-display text-[10px] font-bold uppercase tracking-widest text-leaf-700">
