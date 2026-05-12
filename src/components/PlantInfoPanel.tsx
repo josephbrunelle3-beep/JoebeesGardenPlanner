@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, ShoppingCart, Sprout } from "lucide-react";
+import { ExternalLink, Info as InfoIcon, ShoppingCart, Sprout } from "lucide-react";
 import { usePlanner } from "@/lib/store";
 import { getPlant } from "@/lib/plants";
 import { getShopLinks } from "@/lib/sources";
+import {
+  COMPANION_PRINCIPLES,
+  getPairReason,
+} from "@/lib/companion-reasons";
 
 export function PlantInfoPanel() {
   const selectedId = usePlanner((s) => s.selectedInstanceId);
@@ -69,24 +73,21 @@ export function PlantInfoPanel() {
             )}
           </ul>
           {plant.companions.length > 0 && (
-            <div>
-              <div className="text-[11px] font-semibold text-leaf-700">
-                Likes:
-              </div>
-              <div className="text-[11px] text-leaf-800/80">
-                {plant.companions.map((c) => getPlant(c)?.name ?? c).join(", ")}
-              </div>
-            </div>
+            <CompanionList
+              kind="like"
+              plantId={plant.id}
+              ids={plant.companions}
+            />
           )}
           {plant.antagonists.length > 0 && (
-            <div>
-              <div className="text-[11px] font-semibold text-red-700">
-                Avoid:
-              </div>
-              <div className="text-[11px] text-red-800/80">
-                {plant.antagonists.map((c) => getPlant(c)?.name ?? c).join(", ")}
-              </div>
-            </div>
+            <CompanionList
+              kind="avoid"
+              plantId={plant.id}
+              ids={plant.antagonists}
+            />
+          )}
+          {(plant.companions.length > 0 || plant.antagonists.length > 0) && (
+            <PrinciplesDisclosure />
           )}
           {plant.notes && (
             <p className="rounded bg-leaf-50 p-2 text-[11px] text-leaf-800">
@@ -218,5 +219,76 @@ function Info({ label, value }: { label: string; value: string }) {
       </div>
       <div className="text-leaf-900">{value}</div>
     </li>
+  );
+}
+
+function CompanionList({
+  kind,
+  plantId,
+  ids,
+}: {
+  kind: "like" | "avoid";
+  plantId: string;
+  ids: string[];
+}) {
+  const heading = kind === "like" ? "Likes" : "Avoid";
+  const headColor = kind === "like" ? "text-leaf-700" : "text-red-700";
+  const accent =
+    kind === "like"
+      ? "border-leaf-100 bg-white"
+      : "border-red-100 bg-white";
+  const dot = kind === "like" ? "text-leaf-600" : "text-red-500";
+  return (
+    <div>
+      <div className={`text-[11px] font-semibold ${headColor}`}>{heading}:</div>
+      <ul className="mt-1 grid gap-1">
+        {ids.map((id) => {
+          const other = getPlant(id);
+          const name = other?.name ?? id;
+          const reason = getPairReason(plantId, id, kind);
+          return (
+            <li
+              key={id}
+              className={`rounded border px-2 py-1 text-[11px] text-leaf-800 ${accent}`}
+            >
+              <span className={`mr-1 ${dot}`}>•</span>
+              <span className="font-medium text-leaf-900">{name}</span>
+              {reason ? (
+                <span className="text-leaf-800/80"> — {reason}</span>
+              ) : (
+                <span className="text-leaf-700/60">
+                  {" "}
+                  — {kind === "like" ? "shares similar growing needs." : "competes or shares pests / disease."}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function PrinciplesDisclosure() {
+  const [open, setOpen] = useState(false);
+  return (
+    <details
+      open={open}
+      onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
+      className="mt-1 rounded border border-leaf-100 bg-leaf-50/60 px-2 py-1.5"
+    >
+      <summary className="flex cursor-pointer list-none items-center gap-1 text-[11px] font-semibold text-leaf-800">
+        <InfoIcon className="h-3 w-3 text-leaf-600" />
+        What makes good or bad companions?
+      </summary>
+      <ul className="mt-2 grid gap-1.5">
+        {COMPANION_PRINCIPLES.map((p) => (
+          <li key={p.title} className="text-[11px] leading-snug text-leaf-800/90">
+            <span className="font-semibold text-leaf-900">{p.title}.</span>{" "}
+            {p.body}
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }

@@ -6,6 +6,7 @@ import type {
   Plant,
 } from "./types";
 import { getPlant } from "./plants";
+import { getPairReason } from "./companion-reasons";
 
 /** Grid distance (Chebyshev) between two placements. */
 function gridDistance(a: PlacedPlant, b: PlacedPlant) {
@@ -33,17 +34,23 @@ export function analyzeBed(bed: GardenBed): CompatibilityIssue[] {
       if (!pa || !pb) continue;
 
       if (pa.antagonists.includes(pb.id) || pb.antagonists.includes(pa.id)) {
+        const why = getPairReason(pa.id, pb.id, "avoid");
         issues.push({
           level: "error",
           kind: "antagonist",
-          message: `${pa.name} and ${pb.name} should not be planted near each other.`,
+          message: why
+            ? `${pa.name} and ${pb.name} should not be planted near each other — ${why}`
+            : `${pa.name} and ${pb.name} should not be planted near each other.`,
           instanceIds: [a.instanceId, b.instanceId],
         });
       } else if (pa.companions.includes(pb.id) || pb.companions.includes(pa.id)) {
+        const why = getPairReason(pa.id, pb.id, "like");
         issues.push({
           level: "info",
           kind: "companion",
-          message: `${pa.name} + ${pb.name} are great companions.`,
+          message: why
+            ? `${pa.name} + ${pb.name} are great companions — ${why}`
+            : `${pa.name} + ${pb.name} are great companions.`,
           instanceIds: [a.instanceId, b.instanceId],
         });
       }
