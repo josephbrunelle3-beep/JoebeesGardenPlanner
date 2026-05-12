@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(html.dark, html.dark *));
-
 @theme {
   --color-leaf-50: #f3faf3;
   --color-leaf-100: #dff2df;
@@ -17,19 +15,10 @@
   --color-soil-300: #cbb393;
   --color-soil-500: #8a6a45;
   --color-soil-700: #5a4128;
-  --color-night-50: #2c3a2c;
-  --color-night-100: #232f23;
-  --color-night-200: #1c2718;
-  --color-night-300: #15201a;
-  --color-night-400: #0f1812;
 }
 
 :root {
   color-scheme: light;
-}
-
-html.dark {
-  color-scheme: dark;
 }
 
 html,
@@ -41,59 +30,14 @@ body {
   background: linear-gradient(180deg, #f6fbf3 0%, #ecf6e6 100%);
   color: #1a2b1a;
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  letter-spacing: -0.005em;
 }
-
-html.dark body {
-  background: linear-gradient(180deg, #15201a 0%, #1c2718 60%, #2a2418 100%);
-  color: #e2efd9;
-}
-
-/* --- Pragmatic dark-mode adjustments ----------------------------------
- * Rather than tag every component with `dark:` variants, we re-color the
- * most common Tailwind classes when html.dark is set. This keeps surface
- * area small while giving good coverage. Components that need bespoke
- * dark styling can still override with `dark:` utilities. */
-html.dark .bg-white { background-color: var(--color-night-200); }
-html.dark .bg-leaf-50 { background-color: #1a2a1f; }
-html.dark .bg-leaf-50\/60 { background-color: rgba(26, 42, 31, 0.6); }
-html.dark .bg-leaf-100 { background-color: #243d28; }
-html.dark .bg-amber-50,
-html.dark .bg-amber-50\/60 { background-color: #2a2418; }
-
-html.dark .text-leaf-900 { color: var(--color-leaf-100); }
-html.dark .text-leaf-800 { color: var(--color-leaf-200); }
-html.dark .text-leaf-700 { color: var(--color-leaf-300); }
-html.dark .text-amber-900 { color: #f1d8a3; }
-html.dark .text-amber-800 { color: #f0d09a; }
-
-html.dark .border-leaf-100 { border-color: #233322; }
-html.dark .border-leaf-200 { border-color: #2c4128; }
-html.dark .border-amber-200 { border-color: #5a4128; }
-
-/* Pastel category tints — dim them so cards don't glow on dark bg. */
-html.dark .bg-emerald-50\/70 { background-color: rgba(20, 50, 35, 0.55); }
-html.dark .bg-rose-50\/70 { background-color: rgba(60, 25, 30, 0.55); }
-html.dark .bg-lime-50\/70 { background-color: rgba(30, 50, 20, 0.55); }
-html.dark .bg-violet-50\/70 { background-color: rgba(40, 30, 60, 0.55); }
-html.dark .bg-amber-50\/70 { background-color: rgba(60, 45, 20, 0.55); }
-html.dark .bg-white\/70 { background-color: rgba(36, 51, 36, 0.7); }
-html.dark .bg-white\/85 { background-color: rgba(36, 51, 36, 0.92); }
-html.dark .bg-white\/40 { background-color: rgba(36, 51, 36, 0.45); }
-
-/* Soil texture cells — warm earthy dark instead of pale tan. */
-html.dark .soil-bg {
-  background-color: #3a2e1f;
-  background-image:
-    radial-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 1px),
-    radial-gradient(rgba(0, 0, 0, 0.25) 1px, transparent 1px);
-}
-html.dark .bg-soil-100 { background-color: #2a2114; }
-html.dark .border-soil-300 { border-color: #4a3a26; }
 
 .font-display {
-  font-family: var(--font-display), ui-serif, Georgia, serif;
-  font-optical-sizing: auto;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.025em;
+  font-weight: 600;
 }
 
 /* Primary CTA button — green gradient with lift on hover */

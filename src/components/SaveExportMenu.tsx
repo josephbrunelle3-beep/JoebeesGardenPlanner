@@ -96,7 +96,7 @@ export function SaveExportMenu() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1 rounded-md border border-leaf-200 bg-white px-3 py-1.5 text-xs font-medium text-leaf-800 hover:bg-leaf-50 dark:border-night-50 dark:bg-night-200 dark:text-leaf-100 dark:hover:bg-night-100"
+        className="inline-flex items-center gap-1 rounded-md border border-leaf-200 bg-white px-3 py-1.5 text-xs font-medium text-leaf-800 hover:bg-leaf-50"
         aria-haspopup="menu"
         aria-expanded={open}
       >
@@ -106,7 +106,7 @@ export function SaveExportMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-30 mt-1 w-56 overflow-hidden rounded-md border border-leaf-200 bg-white shadow-lg dark:border-night-50 dark:bg-night-200"
+          className="absolute right-0 z-30 mt-1 w-56 overflow-hidden rounded-md border border-leaf-200 bg-white shadow-lg"
         >
           <MenuItem icon={<Save className="h-3.5 w-3.5" />} label="Save to this browser" onClick={doSave} />
           <MenuItem icon={<Download className="h-3.5 w-3.5" />} label="Export as JSON file" onClick={doExport} />
@@ -119,7 +119,7 @@ export function SaveExportMenu() {
         <div
           className={`absolute right-0 top-full mt-9 z-30 flex items-center gap-1 whitespace-nowrap rounded-md border px-2 py-1 text-[11px] shadow-sm ${
             status.kind === "ok"
-              ? "border-leaf-300 bg-leaf-50 text-leaf-800 dark:border-night-50 dark:bg-night-100 dark:text-leaf-100"
+              ? "border-leaf-300 bg-leaf-50 text-leaf-800"
               : "border-rose-300 bg-rose-50 text-rose-700"
           }`}
         >
@@ -153,7 +153,7 @@ function MenuItem({
       type="button"
       role="menuitem"
       onClick={onClick}
-      className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-leaf-800 hover:bg-leaf-50 dark:text-leaf-100 dark:hover:bg-night-100"
+      className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-leaf-800 hover:bg-leaf-50"
     >
       {icon}
       {label}

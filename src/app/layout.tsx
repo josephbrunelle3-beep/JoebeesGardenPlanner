@@ -1,19 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ChatAssistant } from "@/components/ChatAssistant";
 
-const fontSans = Inter({
+const fontSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const fontDisplay = Fraunces({
+const fontDisplay = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  axes: ["SOFT", "opsz"],
 });
 
 const SITE_URL =
@@ -73,14 +72,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${fontSans.variable} ${fontDisplay.variable}`}>
-      <head>
-        <script
-          // Run before paint to avoid a flash of the wrong theme.
-          dangerouslySetInnerHTML={{
-            __html: `(() => { try { const s = localStorage.getItem('joebees:theme'); const sys = window.matchMedia('(prefers-color-scheme: dark)').matches; if (s === 'dark' || (!s && sys)) document.documentElement.classList.add('dark'); } catch (e) {} })();`,
-          }}
-        />
-      </head>
       <body className="min-h-screen antialiased">
         {children}
         <ChatAssistant />

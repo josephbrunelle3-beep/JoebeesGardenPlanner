@@ -105,19 +105,19 @@ export function OnboardingWizard() {
       role="dialog"
       aria-modal="true"
       aria-label="Welcome"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-leaf-900/40 p-3 backdrop-blur-sm dark:bg-black/60"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-leaf-900/40 p-3 backdrop-blur-sm"
     >
-      <div className="relative w-full max-w-md rounded-2xl border border-leaf-200 bg-white p-5 shadow-2xl dark:border-night-50 dark:bg-night-200">
+      <div className="relative w-full max-w-md rounded-2xl border border-leaf-200 bg-white p-5 shadow-2xl">
         <button
           type="button"
           onClick={dismiss}
           aria-label="Close"
-          className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md text-leaf-700 hover:bg-leaf-50 dark:text-leaf-200 dark:hover:bg-night-100"
+          className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md text-leaf-700 hover:bg-leaf-50"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-wide text-leaf-700/70 dark:text-leaf-300/70">
+        <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-wide text-leaf-700/70">
           <span>Step {step} of 3</span>
           <div className="flex flex-1 gap-1">
             {[1, 2, 3].map((s) => (
@@ -126,7 +126,7 @@ export function OnboardingWizard() {
                 className={`h-1 flex-1 rounded-full ${
                   s <= step
                     ? "bg-gradient-to-r from-leaf-500 to-leaf-700"
-                    : "bg-leaf-100 dark:bg-night-50"
+                    : "bg-leaf-100"
                 }`}
               />
             ))}
