@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { GARDEN_PRESETS } from "@/lib/presets";
+import { GARDEN_PRESETS, expandPromptForAI } from "@/lib/presets";
 import { analyzeBed } from "@/lib/companions";
 import type { BedConditions, GardenBed, PlacedPlant } from "@/lib/types";
 
@@ -40,7 +40,7 @@ export async function GET(req: Request) {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
-            prompt: preset.prompt,
+            prompt: expandPromptForAI(preset.prompt),
             width,
             height,
             conditions,

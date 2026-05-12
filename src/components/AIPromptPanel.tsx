@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
 import { usePlanner } from "@/lib/store";
-import { GARDEN_PRESETS } from "@/lib/presets";
+import { GARDEN_PRESETS, expandPromptForAI } from "@/lib/presets";
 
 export { GARDEN_PRESETS } from "@/lib/presets";
 
@@ -33,7 +33,7 @@ export function AIPromptPanel() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          prompt,
+          prompt: expandPromptForAI(prompt),
           width: bed.width,
           height: bed.height,
           conditions: bed.conditions,
