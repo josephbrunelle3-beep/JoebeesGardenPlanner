@@ -53,7 +53,6 @@ export const usePlanner = create<PlannerState>((set) => ({
           pinnedPlantIds: s.pinnedPlantIds.filter((id) => id !== plantId),
         };
       }
-      if (s.pinnedPlantIds.length >= 5) return s; // cap at 5
       return { pinnedPlantIds: [...s.pinnedPlantIds, plantId] };
     }),
   setPendingPrompt: (p) => set({ pendingPrompt: p }),

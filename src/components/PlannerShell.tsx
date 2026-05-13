@@ -195,12 +195,12 @@ export function PlannerShell({ sections }: PlannerShellProps) {
                 className="animate-step-open mt-3 min-w-0"
               >
                 {s.content}
-                <div className="mt-4 flex justify-end border-t border-leaf-100 pt-3">
+                <div className="mt-4 flex justify-end border-t border-leaf-100 pt-3 pb-safe md:pb-0">
                   {next ? (
                     <button
                       type="button"
                       onClick={() => jumpToStep(next.id)}
-                      className="inline-flex items-center gap-1.5 rounded-md bg-leaf-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-leaf-700"
+                      className="mb-48 inline-flex items-center gap-1.5 rounded-md bg-leaf-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-leaf-700 md:mb-0"
                     >
                       Next: {next.label}
                       <ArrowRight className="h-4 w-4" aria-hidden />

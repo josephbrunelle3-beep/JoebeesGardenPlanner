@@ -175,8 +175,11 @@ type SubGroup = { label: string; plants: Plant[] };
 
 export function PlantPalette({
   onPick,
+  pinMode = false,
 }: {
   onPick?: (plant: Plant) => void;
+  /** When true, tapping a plant toggles its pin state instead of arming placement. */
+  pinMode?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -305,6 +308,7 @@ export function PlantPalette({
                               onPick={onPick}
                               fit={scorePlantFit(p, conditions, placedPlantIds)}
                               placedPlantIds={placedPlantIds}
+                              pinMode={pinMode}
                             />
                           ))}
                         </div>
@@ -319,6 +323,7 @@ export function PlantPalette({
                           onPick={onPick}
                           fit={scorePlantFit(p, conditions, placedPlantIds)}
                           placedPlantIds={placedPlantIds}
+                          pinMode={pinMode}
                         />
                       ))}
                     </div>
@@ -353,11 +358,13 @@ function PaletteItem({
   onPick,
   fit,
   placedPlantIds,
+  pinMode = false,
 }: {
   plant: Plant;
   onPick?: (plant: Plant) => void;
   fit: { level: FitLevel; reasons: string[] };
   placedPlantIds: readonly string[];
+  pinMode?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette:${plant.id}`,
@@ -366,9 +373,7 @@ function PaletteItem({
   const fp = getFootprint(plant);
   const styles = FIT_STYLES[fit.level];
   const isPinned = usePlanner((s) => s.pinnedPlantIds.includes(plant.id));
-  const pinCount = usePlanner((s) => s.pinnedPlantIds.length);
   const togglePinned = usePlanner((s) => s.togglePinned);
-  const canPin = isPinned || pinCount < 5;
 
   // Build companion notes against currently-placed plants so users
   // see *why* this picks rings green/amber/red in the context of THEIR bed.
@@ -406,49 +411,44 @@ function PaletteItem({
         ref={setNodeRef}
         {...listeners}
         {...attributes}
-        onClick={() => onPick?.(plant)}
+        onClick={() => pinMode ? togglePinned(plant.id) : onPick?.(plant)}
         className={`relative flex w-full flex-col items-center gap-0.5 overflow-hidden rounded-md border px-1 py-1.5 text-[11px] leading-tight transition ${
-          styles.wrap
+          pinMode && isPinned
+            ? "border-leaf-500 bg-leaf-100 ring-2 ring-leaf-400/40"
+            : styles.wrap
         } ${isDragging ? "opacity-40" : ""}`}
       >
         <span
           className={`absolute left-1 top-1 h-1.5 w-1.5 rounded-full ${styles.dot}`}
           aria-hidden
         />
-        {/* Pin / unpin for the mobile quick-palette. Stop propagation so the
-            tap doesn't also arm placement on the parent button. */}
-        <span
+        {/* Pin / unpin star — hidden in pinMode since the whole card is the toggle */}
+        {!pinMode && <span
           role="button"
           tabIndex={0}
           aria-label={
             isPinned
               ? `Unpin ${plant.name} from quick palette`
-              : canPin
-                ? `Pin ${plant.name} to quick palette`
-                : "Quick palette full (5 max)"
+              : `Pin ${plant.name} to quick palette`
           }
           aria-pressed={isPinned}
-          aria-disabled={!canPin}
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-            if (!canPin) return;
             togglePinned(plant.id);
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.stopPropagation();
               e.preventDefault();
-              if (canPin) togglePinned(plant.id);
+              togglePinned(plant.id);
             }
           }}
           className={`absolute right-0.5 top-0.5 inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-full transition ${
             isPinned
               ? "bg-amber-400 text-white shadow-sm"
-              : canPin
-                ? "bg-white/70 text-leaf-700/50 hover:bg-amber-100 hover:text-amber-600"
-                : "bg-white/40 text-leaf-700/20"
+              : "bg-white/70 text-leaf-700/50 hover:bg-amber-100 hover:text-amber-600"
           }`}
         >
           <Star
@@ -456,7 +456,7 @@ function PaletteItem({
             fill={isPinned ? "currentColor" : "none"}
             strokeWidth={2}
           />
-        </span>
+        </span>}
         <span className="text-xl leading-none">{plant.emoji}</span>
         <span
           className="block w-full text-center text-[10px] font-medium leading-tight text-leaf-900"

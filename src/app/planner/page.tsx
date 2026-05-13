@@ -97,7 +97,6 @@ export default function PlannerPage() {
           </div>
           <MobilePaletteButton
             pendingPlantId={pendingPlantId}
-            onPick={handlePick}
             onCancelPending={() => setPendingPlantId(null)}
           />
           <MobileQuickPalette
