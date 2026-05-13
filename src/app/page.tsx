@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Leaf, Sparkles, Sprout, Sun } from "lucide-react";
+import { Sparkles, Sprout, Sun } from "lucide-react";
 
 export default function Home() {
   return (
@@ -18,7 +18,14 @@ export default function Home() {
       <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-leaf-700">
-            <Leaf className="h-6 w-6" />
+            <Image
+              src="/joebee.png"
+              alt="JoeBees"
+              width={28}
+              height={28}
+              className="h-7 w-7 rounded-full"
+              priority
+            />
             <span className="text-lg font-semibold">JoeBees</span>
           </div>
           <Link
@@ -33,16 +40,17 @@ export default function Home() {
         <section className="relative mt-8 grid items-center gap-8 sm:mt-12 md:grid-cols-[1.05fr_1fr] md:gap-10">
           <div>
             <span className="inline-flex items-center gap-1 rounded-full border border-leaf-200 bg-white/70 px-3 py-1 text-xs font-medium text-leaf-800 backdrop-blur-sm">
-              <Sprout className="h-3.5 w-3.5" /> Built for raised-bed beginners
+              <Sprout className="h-3.5 w-3.5" /> Built for raised beds
             </span>
             <h1 className="font-display mt-3 text-4xl font-bold leading-[1.05] tracking-tight text-leaf-900 sm:text-5xl lg:text-[3.5rem]">
-              Grow your first raised bed{" "}
-              <span className="text-leaf-700">with confidence.</span>
+              Plan a productive raised bed{" "}
+              <span className="text-leaf-700">in minutes.</span>
             </h1>
             <p className="mt-4 max-w-xl text-base text-leaf-800/80 sm:text-lg">
-              A friendly planning tool and built-in gardening tutor. Get a smart
-              layout in seconds, then ask <strong>JoeBee</strong> — your AI garden
-              buddy — anything: soil mixes, watering, pests, what to plant when.
+              A true-to-size planner backed by horticultural fundamentals —
+              spacing, companion planting, USDA zones, and sun. Generate a
+              layout in seconds, then ask <strong>JoeBee</strong>, your AI
+              gardening tutor, about soil, watering, pests, or timing.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
@@ -58,7 +66,7 @@ export default function Home() {
                 How it works
               </a>
               <span className="inline-flex items-center gap-1 text-xs text-leaf-700/70">
-                <Sparkles className="h-3.5 w-3.5" /> Free · no signup
+                <Sparkles className="h-3.5 w-3.5" /> Free · no account required
               </span>
             </div>
 
@@ -102,7 +110,7 @@ export default function Home() {
               <div className="mt-3 flex items-center gap-2 rounded-lg bg-leaf-50/80 px-3 py-2 text-xs text-leaf-800">
                 <Sparkles className="h-3.5 w-3.5 text-leaf-700" />
                 <span>
-                  <strong className="font-semibold">AI tip:</strong> basil keeps aphids off your tomatoes.
+                  <strong className="font-semibold">Pairing:</strong> basil planted beside tomatoes masks the scent that draws aphids and hornworms.
                 </span>
               </div>
             </div>
@@ -123,22 +131,32 @@ export default function Home() {
               />
             }
             title="Ask JoeBee anything"
-            body="A built-in AI tutor answers beginner questions about soil, watering, pests, and seasons — kindly and in plain English."
+            body="An AI gardening tutor that explains soil, watering, pests, and timing in plain English — no jargon, no guesswork."
           />
           <Feature
             icon={<Sprout className="h-5 w-5" />}
-            title="Raised-bed first"
-            body="Designed for raised beds where you control the soil mix, drainage, and depth. Recommendations assume good drainage and a custom soil blend."
+            title="Built for raised beds"
+            body="Every recommendation assumes a 6–18 in raised bed with good drainage and a custom soil mix — the conditions you actually have."
           />
           <Feature
             icon={<Sun className="h-5 w-5" />}
-            title="Companion + climate smart"
-            body="Pairs friends like tomato + basil, keeps antagonists apart, and tailors picks to your sun and USDA zone."
+            title="Companion + climate aware"
+            body="Groups compatible plants, separates known antagonists, and filters every suggestion by your sun exposure and USDA hardiness zone."
           />
         </section>
 
-        <footer className="mt-14 border-t border-leaf-200 pt-5 text-xs text-leaf-700/70 sm:mt-20">
-          © {new Date().getFullYear()} JoeBees. Built with Next.js &amp; Claude — with a love of dirt under the fingernails.
+        <footer className="mt-14 flex flex-wrap items-center justify-between gap-3 border-t border-leaf-200 pt-5 text-xs text-leaf-700/70 sm:mt-20">
+          <span>
+            © {new Date().getFullYear()} JoeBees. Built with Next.js and Claude.
+          </span>
+          <span className="flex items-center gap-3">
+            <Link href="/contact" className="hover:text-leaf-900 hover:underline">
+              Contact
+            </Link>
+            <Link href="/privacy" className="hover:text-leaf-900 hover:underline">
+              Privacy
+            </Link>
+          </span>
         </footer>
       </div>
     </main>

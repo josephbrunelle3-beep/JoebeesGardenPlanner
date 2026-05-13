@@ -87,8 +87,8 @@ export function MobilePaletteButton({
               </button>
             </div>
             <p className="border-b border-leaf-100 px-4 py-2 text-[11px] text-leaf-700/80">
-              Tap a plant — then tap a cell on the bed to place it. Tap the
-              ☆ on a plant to add it to your quick palette (up to 5).
+              Tap a plant, then tap a cell on the bed to place it. Tap the
+              ☆ on any plant to pin it to your quick palette (up to 5).
             </p>
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
               <PlantPalette onPick={handlePick} />

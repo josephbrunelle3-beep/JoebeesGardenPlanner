@@ -79,9 +79,9 @@ export function Conditions() {
           <MapPin className="h-4 w-4 text-leaf-600" /> Your location (US ZIP)
         </label>
         <p className="mt-0.5 text-xs text-leaf-700/80">
-          We use this to find your{" "}
-          <GlossaryChip term="zone">USDA hardiness zone</GlossaryChip> so plant
-          picks match your climate.
+          Used to set your{" "}
+          <GlossaryChip term="zone">USDA hardiness zone</GlossaryChip> so we
+          only suggest plants that survive your winters.
         </p>
         <div className="mt-2 flex gap-2">
           <input
@@ -131,7 +131,8 @@ export function Conditions() {
           <GlossaryChip term="sun">Sun</GlossaryChip>
         </label>
         <p className="mt-0.5 text-xs text-leaf-700/80">
-          How much direct sun your bed gets at midsummer.
+          Hours of direct sun the bed receives at midsummer. Most fruiting
+          crops need 6+ hours; leafy greens tolerate less.
         </p>
         <select
           className="mt-2 w-full rounded-lg border border-leaf-300 bg-white px-3 py-2 text-sm focus:border-leaf-500 focus:outline-none focus:ring-2 focus:ring-leaf-200"
@@ -152,8 +153,8 @@ export function Conditions() {
           Bed size
         </label>
         <p className="mt-0.5 text-xs text-leaf-700/80">
-          Pick a common size, or enter your own dimensions below. 1 cell ≈ 1
-          square foot.
+          Pick a standard size, or enter custom dimensions below. One cell
+          equals one square foot.
         </p>
 
         <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">

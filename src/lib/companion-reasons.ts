@@ -27,7 +27,7 @@ const LIKE_PAIRS: Record<string, string> = {
   "cucumber|bean":
     "Beans add nitrogen that cucumbers love; their growth habits don't crowd.",
   "cucumber|radish":
-    "Radishes are said to repel cucumber beetles and are harvested before the cucumbers spread.",
+    "Radishes deter cucumber beetles, and they mature in 3–4 weeks — long before the cucumber vines spread to fill the space.",
   "tomato|carrot":
     "Tall tomatoes lightly shade carrots in summer, and carrots loosen soil around tomato roots.",
   "tomato|marigold":
@@ -41,7 +41,7 @@ const LIKE_PAIRS: Record<string, string> = {
   "lettuce|radish":
     "Radishes mature fast and mark the row before lettuce fills in.",
   "strawberry|borage":
-    "Borage attracts pollinators and is said to boost strawberry flavor and yield.",
+    "Borage draws bees and other pollinators to the strawberry flowers and accumulates trace minerals that benefit the patch.",
   "strawberry|spinach":
     "Spinach grows quickly and is harvested before strawberry runners take over.",
   "brassica|dill":
@@ -69,7 +69,7 @@ const LIKE_PAIRS: Record<string, string> = {
   "garlic|brassica":
     "Garlic deters aphids and cabbage loopers.",
   "borage|tomato":
-    "Borage attracts pollinators and is said to deter tomato hornworms.",
+    "Borage attracts pollinators and predatory wasps, and its leaves deter tomato hornworms.",
   "pea|carrot":
     "Peas fix nitrogen that carrots benefit from once peas finish in early summer.",
   "pole-bean|corn":
@@ -98,7 +98,7 @@ const AVOID_PAIRS: Record<string, string> = {
   "cucumber|potato":
     "Potatoes can encourage blight, and both are heavy feeders competing for water.",
   "cucumber|sage":
-    "Strong-aromatic sage is said to inhibit cucumber vine growth.",
+    "Strongly aromatic sage suppresses cucumber vine growth — keep them well apart.",
   "brassica|strawberry":
     "Brassicas leach calcium and outcompete strawberries for nutrients.",
   "brassica|tomato":

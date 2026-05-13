@@ -13,19 +13,80 @@ import { GlossaryChip } from "@/components/GlossaryChip";
 
 export function PlantInfoPanel() {
   const selectedId = usePlanner((s) => s.selectedInstanceId);
-  const placed = usePlanner((s) =>
-    s.bed.plants.find((p) => p.instanceId === selectedId),
-  );
+  const bedPlants = usePlanner((s) => s.bed.plants);
+  const select = usePlanner((s) => s.select);
+  const placed = bedPlants.find((p) => p.instanceId === selectedId);
   const zip = usePlanner((s) => s.bed.conditions.zip);
   const plant = placed ? getPlant(placed.plantId) : null;
   const [tab, setTab] = useState<"details" | "varieties" | "shop">("details");
 
+  // Group bed plants by plantId so we can render a compact chooser.
+  const groupedRows = (() => {
+    const counts = new Map<string, { count: number; firstId: string }>();
+    for (const p of bedPlants) {
+      const existing = counts.get(p.plantId);
+      if (existing) existing.count += 1;
+      else counts.set(p.plantId, { count: 1, firstId: p.instanceId });
+    }
+    return Array.from(counts.entries())
+      .map(([plantId, { count, firstId }]) => ({
+        plantId,
+        count,
+        firstId,
+        plant: getPlant(plantId),
+      }))
+      .filter((r) => r.plant)
+      .sort((a, b) => a.plant!.name.localeCompare(b.plant!.name));
+  })();
+
   if (!plant) {
+    if (bedPlants.length === 0) {
+      return (
+        <div className="flex flex-col gap-2">
+          <h3 className="font-display text-base font-semibold text-leaf-900">
+            Plant details
+          </h3>
+          <p className="text-xs text-leaf-700/70">
+            No plants in the bed yet. Drag from the palette or generate a layout
+            to get started.
+          </p>
+        </div>
+      );
+    }
+
     return (
-      <p className="text-xs text-leaf-700/70">
-        Select a plant in the bed to see its details, varieties, and where to
-        buy seeds or starts.
-      </p>
+      <div className="flex flex-col gap-2 text-xs text-leaf-900">
+        <h3 className="font-display text-base font-semibold text-leaf-900">
+          Plant details
+        </h3>
+        <p className="text-[11px] text-leaf-700/70">
+          {bedPlants.length} plant{bedPlants.length === 1 ? "" : "s"} in the
+          bed. Tap one to see details.
+        </p>
+        <ul className="flex flex-col gap-1">
+          {groupedRows.map((r) => (
+            <li key={r.plantId}>
+              <button
+                type="button"
+                onClick={() => select(r.firstId)}
+                className="flex w-full items-center justify-between gap-2 rounded-md border border-leaf-200 bg-white px-2 py-1.5 text-left hover:bg-leaf-50"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="text-base leading-none">
+                    {r.plant!.emoji}
+                  </span>
+                  <span className="font-medium">{r.plant!.name}</span>
+                </span>
+                {r.count > 1 && (
+                  <span className="rounded-full bg-leaf-100 px-1.5 text-[10px] font-semibold text-leaf-800">
+                    ×{r.count}
+                  </span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     );
   }
 
@@ -35,6 +96,44 @@ export function PlantInfoPanel() {
 
   return (
     <div className="flex flex-col gap-2 text-xs text-leaf-900">
+      <h3 className="font-display text-base font-semibold text-leaf-900">
+        Plant details
+      </h3>
+      {groupedRows.length > 1 && (
+        <div className="-mx-0.5 flex gap-1 overflow-x-auto pb-1">
+          {groupedRows.map((r) => {
+            const isActive = r.plantId === plant.id;
+            return (
+              <button
+                key={r.plantId}
+                type="button"
+                onClick={() => select(r.firstId)}
+                className={`flex flex-none items-center gap-1 rounded-full border px-2 py-1 text-[11px] transition ${
+                  isActive
+                    ? "border-leaf-500 bg-leaf-100 text-leaf-900"
+                    : "border-leaf-200 bg-white text-leaf-700 hover:bg-leaf-50"
+                }`}
+                aria-pressed={isActive}
+              >
+                <span aria-hidden>{r.plant!.emoji}</span>
+                <span className="font-medium">{r.plant!.name}</span>
+                {r.count > 1 && (
+                  <span
+                    className={`rounded-full px-1 text-[10px] font-semibold ${
+                      isActive
+                        ? "bg-white/70 text-leaf-800"
+                        : "bg-leaf-100 text-leaf-800"
+                    }`}
+                  >
+                    ×{r.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <div className="flex items-center gap-2">
         <span className="text-3xl">{plant.emoji}</span>
         <div>
@@ -91,11 +190,6 @@ export function PlantInfoPanel() {
           )}
           {(plant.companions.length > 0 || plant.antagonists.length > 0) && (
             <PrinciplesDisclosure />
-          )}
-          {plant.notes && (
-            <p className="rounded bg-leaf-50 p-2 text-[11px] text-leaf-800">
-              {plant.notes}
-            </p>
           )}
         </>
       )}

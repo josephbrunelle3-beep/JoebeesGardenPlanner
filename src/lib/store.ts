@@ -8,6 +8,9 @@ interface PlannerState {
   pendingPrompt: string | null;
   /** Up to 5 plant IDs the user has pinned for quick access on mobile. */
   pinnedPlantIds: string[];
+  /** Pixel size of one bed cell on screen; set by the canvas component. */
+  canvasCellPx: number;
+  setCanvasCellPx: (px: number) => void;
   setBed: (bed: GardenBed) => void;
   loadBed: (bed: GardenBed) => void;
   resizeBed: (width: number, height: number) => void;
@@ -40,6 +43,9 @@ export const usePlanner = create<PlannerState>((set) => ({
   selectedInstanceId: null,
   pendingPrompt: null,
   pinnedPlantIds: [],
+  canvasCellPx: 64,
+  setCanvasCellPx: (px) =>
+    set((s) => (s.canvasCellPx === px ? s : { canvasCellPx: px })),
   togglePinned: (plantId) =>
     set((s) => {
       if (s.pinnedPlantIds.includes(plantId)) {

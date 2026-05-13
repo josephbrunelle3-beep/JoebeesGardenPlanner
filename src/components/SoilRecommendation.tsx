@@ -20,8 +20,8 @@ export function SoilRecommendation() {
 
       {!rec.hasPlants ? (
         <p className="text-[11px] text-amber-900/70">
-          Add a few plants to your bed and JoeBee will recommend the right soil
-          mix and pH — plus where to buy it.
+          Add a few plants and we’ll recommend a soil mix, pH target, and
+          amendments tuned to what you’re growing — plus where to buy them.
         </p>
       ) : (
         <>

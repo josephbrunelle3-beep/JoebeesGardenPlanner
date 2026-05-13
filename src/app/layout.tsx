@@ -21,11 +21,11 @@ const SITE_URL =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "JoeBees — Free Raised Garden Bed Planner with AI Tutor",
+    default: "JoeBees — Free Raised Garden Bed Planner with AI Gardening Tutor",
     template: "%s · JoeBees",
   },
   description:
-    "Plan a thriving raised garden bed in minutes. Free, no signup. Drag plants onto a true-to-size grid, get AI layout suggestions, check companion planting, and ask JoeBee — your friendly gardening tutor.",
+    "Plan a productive raised garden bed in minutes. Free, no account required. Drag plants onto a true-to-size grid, generate layouts with AI, check companion planting and USDA zone fit, and ask JoeBee for expert gardening advice.",
   applicationName: "JoeBees",
   authors: [{ name: "JoeBees" }],
   creator: "JoeBees",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     title: "JoeBees — Free Raised Garden Bed Planner",
     description:
-      "True-to-size raised bed planner with an AI gardening tutor. Drag plants, check companions, print a take-outside sheet. Free, no signup.",
+      "True-to-size raised bed planner with an AI gardening tutor. Drag plants, check companions, print a take-outside sheet. Free, no account required.",
     images: [
       {
         url: "/og.png",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "JoeBees — Free Raised Garden Bed Planner",
     description:
-      "True-to-size raised bed planner with an AI gardening tutor. Free, no signup.",
+      "True-to-size raised bed planner with an AI gardening tutor. Free, no account required.",
     images: ["/og.png"],
   },
   icons: {
@@ -182,7 +182,7 @@ const jsonLd = {
           acceptedAnswer: {
             "@type": "Answer",
             text:
-              "Yes — JoeBees is completely free to use, with no signup required. Plan a raised bed, ask the AI gardening tutor questions, and print a take-outside sheet at no cost.",
+              "Yes. JoeBees is completely free to use, with no account required. Plan a raised bed, ask the AI gardening tutor questions, and print a take-outside sheet at no cost.",
           },
         },
         {
@@ -191,7 +191,7 @@ const jsonLd = {
           acceptedAnswer: {
             "@type": "Answer",
             text:
-              "A 4×8 foot raised bed is the most common starter size. It gives you 32 square feet — enough for a varied salad/herb/tomato mix — while staying narrow enough to reach the middle from either side without stepping in.",
+              "A 4×8 foot raised bed is the most popular starter size. It gives you 32 square feet — enough for a varied salad, herb, and tomato mix — while staying narrow enough to reach the center from either side without stepping into the bed and compacting the soil.",
           },
         },
         {
@@ -200,7 +200,7 @@ const jsonLd = {
           acceptedAnswer: {
             "@type": "Answer",
             text:
-              "Square-foot gardening divides a raised bed into 1-foot squares and plants a specific number of plants per square based on their mature size. JoeBees uses this method to fit more plants into less space while preventing crowding.",
+              "Square-foot gardening, popularized by Mel Bartholomew, divides a raised bed into 12-inch squares and assigns each square a set number of plants based on their mature size. JoeBees uses this method to maximize yield per square foot while preventing crowding and root competition.",
           },
         },
         {
@@ -209,7 +209,7 @@ const jsonLd = {
           acceptedAnswer: {
             "@type": "Answer",
             text:
-              "Yes. JoeBees automatically warns you when plants that don't grow well together are placed too close, and the AI layout tool groups good companions and separates antagonists by default.",
+              "Yes. JoeBees flags antagonistic pairings placed too close together and groups proven companions automatically. The AI layout tool also accounts for spacing, sun exposure, and your USDA hardiness zone.",
           },
         },
       ],

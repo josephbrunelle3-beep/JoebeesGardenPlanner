@@ -2,8 +2,9 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { Leaf, Trash2, ArrowRight, Check, ArrowUp, ArrowDown } from "lucide-react";
+import { Trash2, ArrowRight, Check, ArrowUp, ArrowDown } from "lucide-react";
 import { usePlanner } from "@/lib/store";
+import { PlannerFooter } from "@/components/PlannerFooter";
 
 export interface PlannerSection {
   id: string;
@@ -56,17 +57,15 @@ export function PlannerShell({ sections }: PlannerShellProps) {
     <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 overflow-x-hidden px-3 py-3 sm:px-4 sm:py-4">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <Link href="/" className="flex items-center gap-2 text-leaf-700">
-          <Leaf className="h-5 w-5" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/joebee.png"
+            alt="JoeBees"
+            className="h-6 w-6 rounded-full"
+          />
           <span className="font-semibold">JoeBees</span>
         </Link>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={clearBed}
-            className="inline-flex items-center gap-1 rounded-md border border-leaf-200 bg-white px-3 py-1.5 text-xs font-medium text-leaf-800 hover:bg-leaf-50"
-          >
-            <Trash2 className="h-3.5 w-3.5" /> Clear bed
-          </button>
-        </div>
+        {/* Clear bed button moved to Refine Layout step */}
       </header>
 
       {/* Sticky scroll-aware progress header */}
@@ -218,6 +217,7 @@ export function PlannerShell({ sections }: PlannerShellProps) {
           </section>
         );
       })}
+      <PlannerFooter />
     </main>
   );
 }

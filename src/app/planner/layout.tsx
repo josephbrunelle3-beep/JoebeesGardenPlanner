@@ -6,20 +6,20 @@ const SITE_URL =
 export const metadata: Metadata = {
   title: "Raised Garden Bed Planner — Drag, Drop, Print",
   description:
-    "Drag plants onto a true-to-size raised bed grid, check companion planting, get AI layout suggestions, and print a take-outside garden sheet. Free, no signup.",
+    "Drag plants onto a true-to-size raised bed grid, check companion planting, generate AI layouts, and print a take-outside garden sheet. Free, no account required.",
   alternates: { canonical: "/planner" },
   openGraph: {
     type: "website",
     url: `${SITE_URL}/planner`,
     title: "JoeBees Raised Garden Bed Planner — Drag, Drop, Print",
     description:
-      "Plan your raised bed in minutes with an AI gardening tutor and printable take-outside sheet.",
+      "Plan your raised bed in minutes with an AI gardening tutor and a printable take-outside sheet.",
   },
   twitter: {
     card: "summary_large_image",
     title: "JoeBees Raised Garden Bed Planner",
     description:
-      "Drag plants onto a true-to-size grid. Free, no signup.",
+      "Drag plants onto a true-to-size grid. Free, no account required.",
   },
 };
 

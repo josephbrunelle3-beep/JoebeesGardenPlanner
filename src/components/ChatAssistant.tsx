@@ -11,10 +11,10 @@ interface ChatMessage {
 }
 
 const STARTER_QUESTIONS = [
-  "I'm brand new — where do I start?",
-  "What soil mix should I use in a raised bed?",
-  "What grows well together?",
-  "How often should I water?",
+  "I’m brand new — where do I start?",
+  "What soil mix belongs in a raised bed?",
+  "Which plants grow well together?",
+  "How often should I water a raised bed?",
 ];
 
 const WELCOME: ChatMessage = {
@@ -154,9 +154,9 @@ export function ChatAssistant() {
             v.currentTime = 0;
           }}
           aria-label="Open JoeBee assistant"
-          className="group fixed bottom-3 left-3 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-400 p-0.5 pr-1.5 text-amber-950 opacity-90 shadow-lg ring-1 ring-amber-500/40 transition hover:scale-105 hover:opacity-100 hover:shadow-xl sm:bottom-4 sm:left-4 sm:gap-2 sm:py-1 sm:pl-1 sm:pr-3"
+          className="group fixed bottom-3 left-3 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-400 p-0.5 pr-3 text-amber-950 shadow-lg ring-1 ring-amber-500/50 transition hover:scale-105 hover:shadow-xl active:scale-95 sm:bottom-4 sm:left-4 sm:py-1 sm:pl-1 sm:pr-4"
         >
-          <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-white shadow-inner ring-1 ring-amber-400 sm:h-10 sm:w-10">
+          <span className="relative flex h-9 w-9 flex-none items-center justify-center overflow-hidden rounded-full bg-white shadow-inner ring-1 ring-amber-400 sm:h-10 sm:w-10">
             <video
               ref={videoRef}
               src="/JOEBEE.mp4"
@@ -175,11 +175,11 @@ export function ChatAssistant() {
           >
             <MessageCircle className="h-2.5 w-2.5" fill="currentColor" />
           </span>
-          <span className="hidden flex-col items-start leading-tight sm:flex">
-            <span className="text-[9px] font-semibold uppercase tracking-wide text-amber-800/80">
+          <span className="flex flex-col items-start leading-tight">
+            <span className="whitespace-nowrap text-[9px] font-semibold uppercase tracking-wide text-amber-800/80">
               Ask
             </span>
-            <span className="text-sm font-bold">JoeBee</span>
+            <span className="whitespace-nowrap text-sm font-bold">JoeBee</span>
           </span>
         </button>
       )}
@@ -230,7 +230,7 @@ export function ChatAssistant() {
             {streaming && messages[messages.length - 1]?.content === "" && (
               <div className="flex items-center gap-2 text-xs text-leaf-700/60">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                JoeBee is thinking...
+                JoeBee is thinking…
               </div>
             )}
             {error && (
@@ -271,7 +271,7 @@ export function ChatAssistant() {
                   send(input);
                 }
               }}
-              placeholder="Ask anything about your raised bed..."
+              placeholder="Ask anything about your raised bed…"
               rows={1}
               className="max-h-28 flex-1 resize-none rounded-md border border-leaf-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-leaf-400"
             />

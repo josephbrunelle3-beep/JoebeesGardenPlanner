@@ -14,8 +14,8 @@ import { getFixesForIssue, type FixOption } from "@/lib/fixes";
 import { FitLegend } from "@/components/FitLegend";
 import type { CompatibilityIssue, GardenBed, PlacedPlant } from "@/lib/types";
 
-const CELL_PX_MAX_DESKTOP = 88;
-const CELL_PX_MAX_MOBILE = 56;
+const CELL_PX_MAX_DESKTOP = 100;
+const CELL_PX_MAX_MOBILE = 68;
 const CELL_PX_MIN = 32;
 
 /**
@@ -67,12 +67,17 @@ export function GardenCanvas({
   children?: React.ReactNode;
 }) {
   const bed = usePlanner((s) => s.bed);
+  const [showConfirm, setShowConfirm] = useState(false);
   const addPlant = usePlanner((s) => s.addPlant);
   const removePlant = usePlanner((s) => s.removePlant);
   const select = usePlanner((s) => s.select);
   const selected = usePlanner((s) => s.selectedInstanceId);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const CELL_PX = useCellPx(bed.width, bed.height, hostRef);
+  const setCanvasCellPx = usePlanner((s) => s.setCanvasCellPx);
+  useEffect(() => {
+    setCanvasCellPx(CELL_PX);
+  }, [CELL_PX, setCanvasCellPx]);
 
   const issues = useMemo(() => analyzeBed(bed), [bed]);
   const issuesByInstance = useMemo(() => {
@@ -102,19 +107,52 @@ export function GardenCanvas({
           <div>
             <h2 className="font-display text-xl font-semibold text-leaf-900">{bed.name}</h2>
             <p className="text-xs text-leaf-700/70">
-              {bed.width} × {bed.height} ft · drag plants in, or use the AI
+              {bed.width} × {bed.height} ft · drag from the palette or use the AI
             </p>
           </div>
-          {selected && (
+          <div className="flex flex-col items-end gap-2">
             <button
               type="button"
-              onClick={() => removePlant(selected)}
-              className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
+              onClick={() => setShowConfirm(true)}
+              className="inline-flex items-center gap-1 rounded-md border border-leaf-200 bg-white px-3 py-1.5 text-xs font-medium text-leaf-800 hover:bg-leaf-50"
             >
               <Trash2 className="h-3.5 w-3.5" />
-              Remove selected
+              Clear bed
             </button>
-          )}
+            {showConfirm && (
+              <div className="absolute right-0 top-12 z-50 w-64 rounded-lg border border-leaf-300 bg-white p-4 shadow-xl">
+                <div className="mb-3 text-sm text-leaf-900 font-semibold">Clear entire bed?</div>
+                <div className="mb-4 text-xs text-leaf-700/80">This will remove all plants from your bed. This cannot be undone.</div>
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="rounded-md border border-leaf-200 bg-white px-3 py-1.5 text-xs font-medium text-leaf-800 hover:bg-leaf-50"
+                    onClick={() => setShowConfirm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
+                    onClick={() => {
+                      usePlanner.getState().clearBed();
+                      setShowConfirm(false);
+                    }}
+                  >
+                    Yes, clear bed
+                  </button>
+                </div>
+              </div>
+            )}
+            {selected && (
+              <button
+                type="button"
+                onClick={() => removePlant(selected)}
+                className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Remove selected
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="relative">
@@ -246,20 +284,21 @@ function CompassBadge() {
           <p className="mt-2 font-semibold text-leaf-900">Why it matters</p>
           <ul className="mt-1 list-disc space-y-0.5 pl-4">
             <li>
-              The sun travels across the southern sky, so anything tall on the
-              <em> north</em> side won&apos;t shade the rest of the bed.
+              The sun arcs across the southern sky, so tall plants on the
+              <em> north</em> side won&apos;t shade shorter ones.
             </li>
             <li>
               Place <strong>tall plants</strong> (tomatoes, corn, trellised
               beans) along the top.
             </li>
             <li>
-              Put <strong>short or shade-tolerant plants</strong> (lettuce,
+              Place <strong>short or shade-tolerant plants</strong> (lettuce,
               herbs, radishes) along the bottom — the south side.
             </li>
           </ul>
           <p className="mt-2 text-[10px] text-leaf-700/70">
-            Tip: stand at the bottom of your bed facing the map. North is up.
+            Tip: stand at the south end of your bed facing north. The top of
+            this map is what you’re looking at.
           </p>
         </div>
       )}

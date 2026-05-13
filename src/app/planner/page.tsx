@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { GardenCanvas } from "@/components/GardenCanvas";
 import { PlantPalette } from "@/components/PlantPalette";
 import { Conditions } from "@/components/Conditions";
 import { AIPromptPanel } from "@/components/AIPromptPanel";
 import { CalendarView } from "@/components/CalendarView";
 import { PlantInfoPanel } from "@/components/PlantInfoPanel";
-import { BedCareList } from "@/components/BedCareList";
 import { SoilRecommendation } from "@/components/SoilRecommendation";
 import { SaveExportMenu } from "@/components/SaveExportMenu";
 import { PlannerShell, type PlannerSection } from "@/components/PlannerShell";
@@ -48,9 +48,9 @@ export default function PlannerPage() {
       step: 1,
       label: "Your space",
       emoji: "📍",
-      title: "Tell us where you'll garden",
+      title: "Tell us about your growing site",
       intro:
-        "Set your ZIP, how much sun the spot gets, and the size of your raised bed.",
+        "Set your ZIP, the daily sun exposure, and the dimensions of your raised bed. These drive every plant recommendation that follows.",
       content: <Conditions />,
     },
     {
@@ -58,9 +58,9 @@ export default function PlannerPage() {
       step: 2,
       label: "Describe",
       emoji: "✨",
-      title: "Describe your garden — we'll design it",
+      title: "Describe your goal — we’ll lay it out",
       intro:
-        "Say what you want to grow in one sentence, or pick a starter garden. The AI will fill the bed for you.",
+        "Type what you want to grow in one sentence, or pick a starter theme. The AI builds a layout that respects spacing, companions, and your hardiness zone.",
       content: <AIPromptPanel />,
     },
     {
@@ -68,9 +68,9 @@ export default function PlannerPage() {
       step: 3,
       label: "Your garden",
       emoji: "🌿",
-      title: "Tweak the layout",
+      title: "Refine the layout",
       intro:
-        "Drag plants to reposition, tap to see why they're a fit, or pick more from the palette.",
+        "Drag plants to reposition them, tap one to see why it fits, or add more from the palette. Companion conflicts are flagged automatically.",
       content: (
         <PlannerDnd>
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_280px]">
@@ -112,12 +112,11 @@ export default function PlannerPage() {
       step: 4,
       label: "Care & timing",
       emoji: "💧",
-      title: "How to care for it",
+      title: "Soil, schedule, and care",
       intro:
-        "Recommended soil mix, planting and harvest windows, and details for each plant.",
+        "Your recommended soil mix and amendments, planting and harvest windows for your zone, and a per-plant care reference.",
       content: (
         <div className="flex flex-col gap-6">
-          <BedCareList />
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             <div className="min-w-0">
               <SoilRecommendation />
@@ -135,7 +134,7 @@ export default function PlannerPage() {
                 Save or share your plan
               </div>
               <p className="text-xs text-leaf-700/80">
-                Export a printable layout or shopping list, or save this bed to come back to.
+                Export a printable layout or shopping list, or save this bed for later.
               </p>
             </div>
             <SaveExportMenu />

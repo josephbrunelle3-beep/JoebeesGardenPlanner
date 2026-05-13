@@ -37,7 +37,7 @@ export function AIPromptPanel() {
   async function generate() {
     if (remaining <= 0) {
       setError(
-        "You've used today's free AI generations. Drag plants from the palette below, or come back tomorrow.",
+        "You’ve used today’s free AI generations. Drag plants from the palette to build your layout manually, or check back tomorrow.",
       );
       return;
     }
@@ -82,8 +82,8 @@ export function AIPromptPanel() {
           What do you want to grow?
         </label>
         <p className="mt-0.5 text-xs text-leaf-700/80">
-          One sentence is enough. We&apos;ll pick the plants and lay them out for
-          your bed and conditions.
+          One sentence is enough. We&apos;ll select the plants and lay them out
+          for your bed size, sun exposure, and hardiness zone.
         </p>
         <textarea
           id="ai-prompt-textarea"
@@ -105,7 +105,7 @@ export function AIPromptPanel() {
             ) : (
               <Sparkles className="h-4 w-4" />
             )}
-            {loading ? "Designing your garden..." : "Generate my garden"}
+            {loading ? "Generating layout…" : "Generate my layout"}
           </button>
           <span
             className={`text-[11px] ${
