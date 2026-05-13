@@ -33,12 +33,37 @@ export function ChatAssistant() {
   const bed = usePlanner((s) => s.bed);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, streaming]);
+
+  // Close on Escape, and when clicking/tapping anywhere outside the panel.
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    function onPointer(e: PointerEvent) {
+      const panel = panelRef.current;
+      if (!panel) return;
+      const target = e.target as Node | null;
+      if (target && !panel.contains(target)) {
+        setOpen(false);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    // Use pointerdown so the dismiss fires before any click handlers on the
+    // page, and capture so we hear it before stopPropagation in children.
+    window.addEventListener("pointerdown", onPointer, true);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onPointer, true);
+    };
+  }, [open]);
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -100,16 +125,7 @@ export function ChatAssistant() {
 
   return (
     <>
-      {open ? (
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          aria-label="Close garden assistant"
-          className="fixed bottom-4 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full bg-leaf-700 text-white shadow-lg hover:bg-leaf-800 sm:bottom-5 sm:right-5"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      ) : (
+      {!open && (
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -138,9 +154,9 @@ export function ChatAssistant() {
             v.currentTime = 0;
           }}
           aria-label="Open JoeBee assistant"
-          className="group fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-400 p-1 pr-2 text-amber-950 shadow-xl ring-2 ring-amber-500/40 transition hover:scale-105 hover:shadow-2xl sm:bottom-5 sm:right-5 sm:gap-3 sm:py-2 sm:pl-2 sm:pr-5"
+          className="group fixed bottom-3 left-3 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-400 p-0.5 pr-1.5 text-amber-950 opacity-90 shadow-lg ring-1 ring-amber-500/40 transition hover:scale-105 hover:opacity-100 hover:shadow-xl sm:bottom-4 sm:left-4 sm:gap-2 sm:py-1 sm:pl-1 sm:pr-3"
         >
-          <span className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white shadow-inner ring-2 ring-amber-400 sm:h-14 sm:w-14">
+          <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-white shadow-inner ring-1 ring-amber-400 sm:h-10 sm:w-10">
             <video
               ref={videoRef}
               src="/JOEBEE.mp4"
@@ -155,21 +171,26 @@ export function ChatAssistant() {
           {/* Mobile-only chat indicator badge */}
           <span
             aria-hidden
-            className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-leaf-600 text-white shadow ring-2 ring-white sm:hidden"
+            className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-leaf-600 text-white shadow ring-2 ring-white sm:hidden"
           >
-            <MessageCircle className="h-3 w-3" fill="currentColor" />
+            <MessageCircle className="h-2.5 w-2.5" fill="currentColor" />
           </span>
           <span className="hidden flex-col items-start leading-tight sm:flex">
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-800/80">
+            <span className="text-[9px] font-semibold uppercase tracking-wide text-amber-800/80">
               Ask
             </span>
-            <span className="text-base font-bold">JoeBee</span>
+            <span className="text-sm font-bold">JoeBee</span>
           </span>
         </button>
       )}
 
       {open && (
-        <div className="fixed bottom-20 right-3 left-3 z-40 flex h-[min(70vh,560px)] flex-col overflow-hidden rounded-2xl border border-leaf-200 bg-white shadow-2xl sm:left-auto sm:right-5 sm:w-[min(92vw,380px)]">
+        <div
+          ref={panelRef}
+          role="dialog"
+          aria-label="JoeBee assistant"
+          className="fixed bottom-20 right-3 left-3 z-40 flex h-[min(70vh,560px)] flex-col overflow-hidden rounded-2xl border border-leaf-200 bg-white shadow-2xl sm:right-auto sm:left-5 sm:w-[min(92vw,380px)]"
+        >
           <header className="flex items-center gap-2 border-b border-leaf-100 bg-leaf-50 px-3 py-2">
             <span className="relative flex h-8 w-8 overflow-hidden rounded-full bg-white ring-1 ring-amber-300">
               <video
@@ -183,12 +204,20 @@ export function ChatAssistant() {
                 className="absolute inset-0 h-full w-full scale-125 object-cover object-center"
               />
             </span>
-            <div className="flex flex-col leading-tight">
+            <div className="flex flex-1 flex-col leading-tight">
               <span className="text-sm font-semibold text-leaf-900">JoeBee</span>
               <span className="text-[11px] text-leaf-700/70">
                 Your beginner-friendly gardening tutor
               </span>
             </div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close JoeBee assistant"
+              className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-leaf-700 hover:bg-leaf-100 hover:text-leaf-900"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </header>
 
           <div

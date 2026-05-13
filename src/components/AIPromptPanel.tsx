@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
 import { usePlanner } from "@/lib/store";
 import { GARDEN_PRESETS, expandPromptForAI } from "@/lib/presets";
+import {
+  consumeGeneration,
+  getGenerationsRemaining,
+  GENERATIONS_PER_DAY,
+} from "@/lib/rateLimit";
 
 export { GARDEN_PRESETS } from "@/lib/presets";
 
@@ -16,6 +21,11 @@ export function AIPromptPanel() {
   const [loading, setLoading] = useState(false);
   const [rationale, setRationale] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [remaining, setRemaining] = useState<number>(GENERATIONS_PER_DAY);
+
+  useEffect(() => {
+    setRemaining(getGenerationsRemaining());
+  }, []);
 
   useEffect(() => {
     if (pendingPrompt) {
@@ -25,6 +35,12 @@ export function AIPromptPanel() {
   }, [pendingPrompt, setPendingPrompt]);
 
   async function generate() {
+    if (remaining <= 0) {
+      setError(
+        "You've used today's free AI generations. Drag plants from the palette below, or come back tomorrow.",
+      );
+      return;
+    }
     setLoading(true);
     setError(null);
     setRationale(null);
@@ -43,6 +59,7 @@ export function AIPromptPanel() {
       if (!res.ok) {
         setError(data.error ?? "AI request failed.");
       } else {
+        setRemaining(consumeGeneration());
         setRationale(data.rationale);
         replacePlants(data.plants);
       }
@@ -53,35 +70,58 @@ export function AIPromptPanel() {
     }
   }
 
-  return (
-    <div id="ai-prompt-panel" className="flex h-full flex-col gap-2">
-      <h3 className="font-display flex items-center gap-2 text-base font-semibold text-leaf-900">
-        <Sparkles className="h-4 w-4 text-leaf-600" /> Design my bed
-        <span className="ml-1 text-[11px] font-normal text-leaf-700/70">
-          — describe what you want to grow
-        </span>
-      </h3>
-      <textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        className="min-h-[72px] max-h-[140px] resize-none rounded-md border border-leaf-200 bg-white p-2 text-xs"
-        placeholder="e.g. Three-sisters bed for a family of four..."
-      />
-      <button
-        type="button"
-        disabled={loading || !prompt.trim()}
-        onClick={generate}
-        className="btn-primary inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium disabled:opacity-50"
-      >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-        {loading ? "Designing..." : "Generate layout"}
-      </button>
+  const capped = remaining <= 0;
 
-      <div className="mt-1">
-        <div className="mb-1 text-[11px] font-semibold text-leaf-700/70">
-          Or pick a starter garden
+  return (
+    <div id="ai-prompt-panel" className="flex h-full flex-col gap-3">
+      <div className="rounded-2xl border border-leaf-200 bg-gradient-to-br from-leaf-50 via-white to-white p-4 shadow-sm sm:p-5">
+        <label
+          htmlFor="ai-prompt-textarea"
+          className="block text-sm font-medium text-leaf-900"
+        >
+          What do you want to grow?
+        </label>
+        <p className="mt-0.5 text-xs text-leaf-700/80">
+          One sentence is enough. We&apos;ll pick the plants and lay them out for
+          your bed and conditions.
+        </p>
+        <textarea
+          id="ai-prompt-textarea"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={3}
+          className="mt-2 min-h-[96px] w-full resize-y rounded-lg border border-leaf-200 bg-white p-3 text-sm shadow-inner focus:border-leaf-400 focus:outline-none focus:ring-2 focus:ring-leaf-200"
+          placeholder="e.g. A salsa garden for a family of four — tomatoes, peppers, cilantro, onions."
+        />
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+          <button
+            type="button"
+            disabled={loading || !prompt.trim() || capped}
+            onClick={generate}
+            className="btn-primary inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50"
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
+            {loading ? "Designing your garden..." : "Generate my garden"}
+          </button>
+          <span
+            className={`text-[11px] ${
+              capped ? "text-amber-700" : "text-leaf-700/70"
+            }`}
+          >
+            {remaining} of {GENERATIONS_PER_DAY} free generations left today
+          </span>
         </div>
-        <div className="flex flex-wrap gap-1">
+      </div>
+
+      <div>
+        <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-leaf-700/70">
+          Or start from a preset
+        </div>
+        <div className="flex flex-wrap gap-1.5">
           {GARDEN_PRESETS.map((p) => {
             const active = prompt === p.prompt;
             return (
@@ -90,7 +130,7 @@ export function AIPromptPanel() {
                 type="button"
                 onClick={() => setPrompt(p.prompt)}
                 title={p.prompt}
-                className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] transition ${
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition ${
                   active
                     ? "border-leaf-600 bg-leaf-600 text-white"
                     : "border-leaf-200 bg-white text-leaf-800 hover:bg-leaf-50"
@@ -105,13 +145,13 @@ export function AIPromptPanel() {
       </div>
 
       {error && (
-        <p className="rounded border border-red-200 bg-red-50 p-2 text-xs text-red-700">
+        <p className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs text-red-700">
           {error}
         </p>
       )}
       {rationale && (
-        <div className="rounded border border-leaf-200 bg-leaf-50 p-2 text-xs text-leaf-800">
-          <strong>Rationale: </strong>
+        <div className="rounded-lg border border-leaf-200 bg-leaf-50 p-3 text-xs text-leaf-800">
+          <strong className="font-semibold">Why this layout: </strong>
           {rationale}
         </div>
       )}

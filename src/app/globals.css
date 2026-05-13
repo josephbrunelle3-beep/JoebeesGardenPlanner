@@ -50,6 +50,26 @@ body {
   font-weight: 600;
 }
 
+/* Smooth fade + slide-up when a planner step opens. */
+@keyframes step-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-step-open {
+  animation: step-open 220ms ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-open {
+    animation: none;
+  }
+}
+
 /* Primary CTA button — green gradient with lift on hover */
 .btn-primary {
   background-image: linear-gradient(135deg, var(--color-leaf-500), var(--color-leaf-700));

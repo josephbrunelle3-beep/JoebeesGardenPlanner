@@ -9,6 +9,7 @@ import {
   COMPANION_PRINCIPLES,
   getPairReason,
 } from "@/lib/companion-reasons";
+import { GlossaryChip } from "@/components/GlossaryChip";
 
 export function PlantInfoPanel() {
   const selectedId = usePlanner((s) => s.selectedInstanceId);
@@ -64,11 +65,11 @@ export function PlantInfoPanel() {
       {tab === "details" && (
         <>
           <ul className="grid grid-cols-2 gap-1">
-            <Info label="Sun" value={plant.sun.replace("-", " ")} />
+            <Info label={<GlossaryChip term="sun">Sun</GlossaryChip>} value={plant.sun.replace("-", " ")} />
             <Info label="Water" value={plant.water} />
-            <Info label="Soil" value={plant.soil.join(", ")} />
-            <Info label="pH" value={plant.ph.join(", ")} />
-            <Info label="Zones" value={`${plant.zones[0]}–${plant.zones[1]}`} />
+            <Info label={<GlossaryChip term="soil">Soil</GlossaryChip>} value={plant.soil.join(", ")} />
+            <Info label={<GlossaryChip term="ph">pH</GlossaryChip>} value={plant.ph.join(", ")} />
+            <Info label={<GlossaryChip term="zone">Zones</GlossaryChip>} value={`${plant.zones[0]}–${plant.zones[1]}`} />
             <Info label="Spacing" value={`${plant.spacingIn}"`} />
             {plant.daysToMaturity && (
               <Info label="To maturity" value={`${plant.daysToMaturity} days`} />
@@ -252,7 +253,7 @@ function TabBtn({
   );
 }
 
-function Info({ label, value }: { label: string; value: string }) {
+function Info({ label, value }: { label: React.ReactNode; value: string }) {
   return (
     <li className="rounded border border-leaf-100 bg-white px-2 py-1">
       <div className="text-[10px] uppercase tracking-wide text-leaf-700/60">
@@ -272,7 +273,12 @@ function CompanionList({
   plantId: string;
   ids: string[];
 }) {
-  const heading = kind === "like" ? "Likes" : "Avoid";
+  const heading =
+    kind === "like" ? (
+      <GlossaryChip term="companion">Likes</GlossaryChip>
+    ) : (
+      <GlossaryChip term="antagonist">Avoid</GlossaryChip>
+    );
   const headColor = kind === "like" ? "text-leaf-700" : "text-red-700";
   const accent =
     kind === "like"

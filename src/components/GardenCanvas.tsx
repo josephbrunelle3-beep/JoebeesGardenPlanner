@@ -2,13 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  DndContext,
-  PointerSensor,
   useDraggable,
   useDroppable,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
 } from "@dnd-kit/core";
 import { Trash2 } from "lucide-react";
 import { usePlanner } from "@/lib/store";
@@ -16,11 +11,12 @@ import { getPlant } from "@/lib/plants";
 import { analyzeBed } from "@/lib/companions";
 import { getFootprint } from "@/lib/footprint";
 import { getFixesForIssue, type FixOption } from "@/lib/fixes";
+import { FitLegend } from "@/components/FitLegend";
 import type { CompatibilityIssue, GardenBed, PlacedPlant } from "@/lib/types";
 
-const CELL_PX_MAX_DESKTOP = 64;
-const CELL_PX_MAX_MOBILE = 44;
-const CELL_PX_MIN = 28;
+const CELL_PX_MAX_DESKTOP = 88;
+const CELL_PX_MAX_MOBILE = 56;
+const CELL_PX_MIN = 32;
 
 /**
  * Compute the largest cell size that lets the whole bed fit inside the
@@ -42,8 +38,8 @@ function useCellPx(
       const maxCell = isMobile ? CELL_PX_MAX_MOBILE : CELL_PX_MAX_DESKTOP;
       // 24px of horizontal padding inside the bed container (p-3 = 12px × 2).
       const availW = Math.max(0, el.clientWidth - 24);
-      // Cap height to ~70vh so the bed never pushes other UI off-screen.
-      const availH = Math.max(0, window.innerHeight * 0.7 - 24);
+      // Cap height to ~85vh so the bed never pushes other UI off-screen.
+      const availH = Math.max(0, window.innerHeight * 0.85 - 24);
       const byW = Math.floor(availW / Math.max(1, bedW));
       const byH = Math.floor(availH / Math.max(1, bedH));
       const next = Math.max(CELL_PX_MIN, Math.min(maxCell, byW, byH));
@@ -72,16 +68,11 @@ export function GardenCanvas({
 }) {
   const bed = usePlanner((s) => s.bed);
   const addPlant = usePlanner((s) => s.addPlant);
-  const movePlant = usePlanner((s) => s.movePlant);
   const removePlant = usePlanner((s) => s.removePlant);
   const select = usePlanner((s) => s.select);
   const selected = usePlanner((s) => s.selectedInstanceId);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const CELL_PX = useCellPx(bed.width, bed.height, hostRef);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-  );
 
   const issues = useMemo(() => analyzeBed(bed), [bed]);
   const issuesByInstance = useMemo(() => {
@@ -96,23 +87,6 @@ export function GardenCanvas({
     return m;
   }, [issues]);
 
-  function handleDragEnd(e: DragEndEvent) {
-    const overData = e.over?.data.current as
-      | { type: "cell"; x: number; y: number }
-      | undefined;
-    const activeData = e.active.data.current as
-      | { type: "palette"; plantId: string }
-      | { type: "placed"; instanceId: string }
-      | undefined;
-    if (!overData || !activeData) return;
-
-    if (activeData.type === "palette") {
-      addPlant(activeData.plantId, overData.x, overData.y);
-    } else {
-      movePlant(activeData.instanceId, overData.x, overData.y);
-    }
-  }
-
   function handleCellClick(x: number, y: number) {
     if (pendingPlantId) {
       addPlant(pendingPlantId, x, y);
@@ -123,9 +97,8 @@ export function GardenCanvas({
   }
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="font-display text-xl font-semibold text-leaf-900">{bed.name}</h2>
             <p className="text-xs text-leaf-700/70">
@@ -150,6 +123,7 @@ export function GardenCanvas({
             ref={hostRef}
             className="relative max-w-full overflow-auto rounded-xl border border-soil-300 bg-soil-100 p-3 shadow-inner"
           >
+            <FitLegend className="mb-2" />
             <div
               className="relative mx-auto grid"
             style={{
@@ -183,33 +157,32 @@ export function GardenCanvas({
                 onSelect={() => select(p.instanceId)}
               />
             ))}
+          </div>
+          </div>
 
-            {bed.plants.length === 0 && (
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center"
-              >
-                <div className="flex items-center gap-2 opacity-50">
-                  <span className="text-4xl sm:text-5xl">🌱</span>
-                  <span className="text-4xl sm:text-5xl">🌼</span>
-                  <span className="text-4xl sm:text-5xl">🍅</span>
+          {bed.plants.length === 0 && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-3">
+              <div className="pointer-events-auto w-full max-w-sm rounded-xl border border-leaf-200 bg-white/95 px-4 py-3 text-center shadow-md backdrop-blur-sm">
+                <div className="mb-1 flex items-center justify-center gap-1 opacity-80">
+                  <span className="text-2xl">🌱</span>
+                  <span className="text-2xl">🌼</span>
+                  <span className="text-2xl">🍅</span>
                 </div>
-                <p className="font-display text-base font-semibold text-leaf-900/70 sm:text-lg">
-                  Drop a plant here to get started
+                <p className="font-display text-sm font-semibold text-leaf-900">
+                  Your bed is empty
                 </p>
-                <p className="text-[11px] text-leaf-800/60 sm:text-xs">
-                  Drag from the palette, or pick a starter garden above.
+                <p className="mt-1 text-[11px] leading-snug text-leaf-700/80">
+                  Go to <strong>Step 2</strong> to describe your garden, or drag
+                  a plant from the palette.
                 </p>
               </div>
-            )}
-          </div>
-          </div>
+            </div>
+          )}
         </div>
 
         <IssuesList issues={issues} />
         {children}
       </div>
-    </DndContext>
   );
 }
 
@@ -452,30 +425,61 @@ function IssuesList({ issues }: { issues: CompatibilityIssue[] }) {
   }
 
   if (!issues.length) {
+    if (bed.plants.length === 0) return null;
     return (
-      <p className="text-xs text-leaf-700/70">
-        No compatibility issues detected.
-      </p>
+      <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+        <span aria-hidden className="text-base">✅</span>
+        <span>
+          <strong>Looks good!</strong> No compatibility issues with your current
+          plants.
+        </span>
+      </div>
     );
   }
 
   const errors = issues.filter((i) => i.level === "error");
   const warnings = issues.filter((i) => i.level === "warning");
   const info = issues.filter((i) => i.level === "info");
+  const seriousCount = errors.length + warnings.length;
 
   return (
-    <div className="grid gap-2 text-xs">
-      {errors.map((i, idx) => (
-        <IssueRow key={`e${idx}`} issue={i} bed={bed} tone="error" onFix={runFix} />
-      ))}
-      {warnings.map((i, idx) => (
-        <IssueRow key={`w${idx}`} issue={i} bed={bed} tone="warning" onFix={runFix} />
-      ))}
-      {info.slice(0, 5).map((i, idx) => (
-        <div key={`i${idx}`} className="rounded border border-leaf-200 bg-leaf-50 px-3 py-2 text-leaf-800">
-          ✓ {i.message}
+    <div className="flex flex-col gap-2">
+      {seriousCount > 0 && (
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2">
+          <span aria-hidden className="text-base">⚠️</span>
+          <span className="text-xs font-semibold text-amber-900">
+            {seriousCount === 1
+              ? "1 issue to look at"
+              : `${seriousCount} issues to look at`}
+          </span>
+          <span className="text-[11px] text-amber-800/80">
+            — tap a suggested fix below to resolve it
+          </span>
+          {errors.length > 0 && (
+            <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-semibold text-white">
+              {errors.length} serious
+            </span>
+          )}
+          {warnings.length > 0 && (
+            <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+              {warnings.length} caution
+            </span>
+          )}
         </div>
-      ))}
+      )}
+      <div className="grid gap-2 text-xs">
+        {errors.map((i, idx) => (
+          <IssueRow key={`e${idx}`} issue={i} bed={bed} tone="error" onFix={runFix} />
+        ))}
+        {warnings.map((i, idx) => (
+          <IssueRow key={`w${idx}`} issue={i} bed={bed} tone="warning" onFix={runFix} />
+        ))}
+        {info.slice(0, 5).map((i, idx) => (
+          <div key={`i${idx}`} className="rounded border border-leaf-200 bg-leaf-50 px-3 py-2 text-leaf-800">
+            ✓ {i.message}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

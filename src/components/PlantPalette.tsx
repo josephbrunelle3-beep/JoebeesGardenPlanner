@@ -3,11 +3,13 @@
 import { useMemo, useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { ChevronDown, ChevronRight, Search } from "lucide-react";
-import { PLANTS } from "@/lib/plants";
+import { PLANTS, getPlant } from "@/lib/plants";
 import { getFootprint } from "@/lib/footprint";
 import { scorePlantFit, type FitLevel } from "@/lib/fit";
+import { getPairReason } from "@/lib/companion-reasons";
 import { usePlanner } from "@/lib/store";
 import type { Plant, PlantCategory } from "@/lib/types";
+import { ReasonPopover } from "@/components/ReasonPopover";
 
 const CATEGORY_META: Record<
   PlantCategory,
@@ -226,10 +228,12 @@ export function PlantPalette({
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="font-display text-base font-semibold text-leaf-900">Browse plants</h3>
-      <p className="text-xs text-leaf-700/70">
-        Open a category, then drag a plant onto the bed (or click it, then click a cell).
-      </p>
+      <div className="flex items-center gap-2 px-1">
+        <span aria-hidden className="text-base">🎨</span>
+        <h3 className="font-display text-sm font-semibold text-leaf-900">
+          Plant palette
+        </h3>
+      </div>
 
       <div className="relative">
         <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-leaf-600/60" />
@@ -293,24 +297,28 @@ export function PlantPalette({
                           </span>
                           <span className="ml-1 h-px flex-1 bg-leaf-100" />
                         </div>
-                        <div className="grid grid-cols-4 gap-1 sm:grid-cols-5 lg:grid-cols-3">
-                          {sub.plants.map((p) => (                            <PaletteItem
+                        <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
+                          {sub.plants.map((p) => (
+                            <PaletteItem
                               key={p.id}
                               plant={p}
                               onPick={onPick}
                               fit={scorePlantFit(p, conditions, placedPlantIds)}
+                              placedPlantIds={placedPlantIds}
                             />
                           ))}
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="grid grid-cols-4 gap-1 sm:grid-cols-5 lg:grid-cols-3">
-                      {plants.map((p) => (                        <PaletteItem
+                    <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
+                      {plants.map((p) => (
+                        <PaletteItem
                           key={p.id}
                           plant={p}
                           onPick={onPick}
                           fit={scorePlantFit(p, conditions, placedPlantIds)}
+                          placedPlantIds={placedPlantIds}
                         />
                       ))}
                     </div>
@@ -344,10 +352,12 @@ function PaletteItem({
   plant,
   onPick,
   fit,
+  placedPlantIds,
 }: {
   plant: Plant;
   onPick?: (plant: Plant) => void;
   fit: { level: FitLevel; reasons: string[] };
+  placedPlantIds: readonly string[];
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette:${plant.id}`,
@@ -355,31 +365,64 @@ function PaletteItem({
   });
   const fp = getFootprint(plant);
   const styles = FIT_STYLES[fit.level];
-  const titleSuffix =
-    fit.reasons.length > 0 ? `\nFit: ${fit.reasons.join(", ")}` : "";
+
+  // Build companion notes against currently-placed plants so users
+  // see *why* this picks rings green/amber/red in the context of THEIR bed.
+  const companionNotes = useMemo(() => {
+    const seen = new Set<string>();
+    const notes: { label: string; reason: string; kind: "like" | "avoid" }[] = [];
+    for (const id of placedPlantIds) {
+      if (id === plant.id || seen.has(id)) continue;
+      seen.add(id);
+      const other = getPlant(id);
+      if (!other) continue;
+      if (plant.antagonists.includes(id) || other.antagonists.includes(plant.id)) {
+        const reason =
+          getPairReason(plant.id, id, "avoid") ??
+          "These plants tend to compete for nutrients or share pests.";
+        notes.push({ label: `⚠ near ${other.name.toLowerCase()}`, reason, kind: "avoid" });
+      } else if (plant.companions.includes(id) || other.companions.includes(plant.id)) {
+        const reason =
+          getPairReason(plant.id, id, "like") ??
+          "Classic companion pairing.";
+        notes.push({ label: `👍 with ${other.name.toLowerCase()}`, reason, kind: "like" });
+      }
+    }
+    return notes;
+  }, [plant, placedPlantIds]);
+
   return (
-    <button
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      onClick={() => onPick?.(plant)}
-      className={`relative flex flex-col items-center gap-0.5 rounded-md border px-1 py-1.5 text-[11px] transition ${
-        styles.wrap
-      } ${isDragging ? "opacity-40" : ""}`}
-      title={`${plant.name} — ${fp.label} (spacing ${plant.spacingIn}")${titleSuffix}`}
+    <ReasonPopover
+      plantName={plant.name}
+      fitLevel={fit.level}
+      fitReasons={fit.reasons}
+      companionNotes={companionNotes}
     >
-      <span
-        className={`absolute right-1 top-1 h-1.5 w-1.5 rounded-full ${styles.dot}`}
-        aria-hidden
-      />
-      <span className="text-xl leading-none">{plant.emoji}</span>
-      <span className="w-full truncate text-center text-leaf-900">
-        {plant.name}
-      </span>
-      <span className="text-[9px] text-leaf-700/60">
-        {fp.label}
-        {fp.perCell > 1 ? ` · ${fp.perCell}/sqft` : ""}
-      </span>
-    </button>
+      <button
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
+        onClick={() => onPick?.(plant)}
+        className={`relative flex w-full flex-col items-center gap-0.5 overflow-hidden rounded-md border px-1 py-1.5 text-[11px] leading-tight transition ${
+          styles.wrap
+        } ${isDragging ? "opacity-40" : ""}`}
+      >
+        <span
+          className={`absolute left-1 top-1 h-1.5 w-1.5 rounded-full ${styles.dot}`}
+          aria-hidden
+        />
+        <span className="text-xl leading-none">{plant.emoji}</span>
+        <span
+          className="block w-full text-center text-[10px] font-medium leading-tight text-leaf-900"
+          style={{ overflowWrap: "anywhere", hyphens: "auto" }}
+        >
+          {plant.name}
+        </span>
+        <span className="text-[9px] text-leaf-700/60">
+          {fp.label}
+          {fp.perCell > 1 ? ` · ${fp.perCell}/sqft` : ""}
+        </span>
+      </button>
+    </ReasonPopover>
   );
 }
