@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
-import { ChevronDown, ChevronRight, Search } from "lucide-react";
+import { ChevronDown, ChevronRight, Search, Star } from "lucide-react";
 import { PLANTS, getPlant } from "@/lib/plants";
 import { getFootprint } from "@/lib/footprint";
 import { scorePlantFit, type FitLevel } from "@/lib/fit";
@@ -365,6 +365,10 @@ function PaletteItem({
   });
   const fp = getFootprint(plant);
   const styles = FIT_STYLES[fit.level];
+  const isPinned = usePlanner((s) => s.pinnedPlantIds.includes(plant.id));
+  const pinCount = usePlanner((s) => s.pinnedPlantIds.length);
+  const togglePinned = usePlanner((s) => s.togglePinned);
+  const canPin = isPinned || pinCount < 5;
 
   // Build companion notes against currently-placed plants so users
   // see *why* this picks rings green/amber/red in the context of THEIR bed.
@@ -411,6 +415,48 @@ function PaletteItem({
           className={`absolute left-1 top-1 h-1.5 w-1.5 rounded-full ${styles.dot}`}
           aria-hidden
         />
+        {/* Pin / unpin for the mobile quick-palette. Stop propagation so the
+            tap doesn't also arm placement on the parent button. */}
+        <span
+          role="button"
+          tabIndex={0}
+          aria-label={
+            isPinned
+              ? `Unpin ${plant.name} from quick palette`
+              : canPin
+                ? `Pin ${plant.name} to quick palette`
+                : "Quick palette full (5 max)"
+          }
+          aria-pressed={isPinned}
+          aria-disabled={!canPin}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (!canPin) return;
+            togglePinned(plant.id);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.stopPropagation();
+              e.preventDefault();
+              if (canPin) togglePinned(plant.id);
+            }
+          }}
+          className={`absolute right-0.5 top-0.5 inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-full transition ${
+            isPinned
+              ? "bg-amber-400 text-white shadow-sm"
+              : canPin
+                ? "bg-white/70 text-leaf-700/50 hover:bg-amber-100 hover:text-amber-600"
+                : "bg-white/40 text-leaf-700/20"
+          }`}
+        >
+          <Star
+            className="h-3 w-3"
+            fill={isPinned ? "currentColor" : "none"}
+            strokeWidth={2}
+          />
+        </span>
         <span className="text-xl leading-none">{plant.emoji}</span>
         <span
           className="block w-full text-center text-[10px] font-medium leading-tight text-leaf-900"

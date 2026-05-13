@@ -6,6 +6,8 @@ interface PlannerState {
   bed: GardenBed;
   selectedInstanceId: string | null;
   pendingPrompt: string | null;
+  /** Up to 5 plant IDs the user has pinned for quick access on mobile. */
+  pinnedPlantIds: string[];
   setBed: (bed: GardenBed) => void;
   loadBed: (bed: GardenBed) => void;
   resizeBed: (width: number, height: number) => void;
@@ -17,6 +19,7 @@ interface PlannerState {
   select: (id: string | null) => void;
   replacePlants: (plants: PlacedPlant[]) => void;
   setPendingPrompt: (p: string | null) => void;
+  togglePinned: (plantId: string) => void;
 }
 
 function uid() {
@@ -36,6 +39,17 @@ export const usePlanner = create<PlannerState>((set) => ({
   bed: initialBed,
   selectedInstanceId: null,
   pendingPrompt: null,
+  pinnedPlantIds: [],
+  togglePinned: (plantId) =>
+    set((s) => {
+      if (s.pinnedPlantIds.includes(plantId)) {
+        return {
+          pinnedPlantIds: s.pinnedPlantIds.filter((id) => id !== plantId),
+        };
+      }
+      if (s.pinnedPlantIds.length >= 5) return s; // cap at 5
+      return { pinnedPlantIds: [...s.pinnedPlantIds, plantId] };
+    }),
   setPendingPrompt: (p) => set({ pendingPrompt: p }),
   setBed: (bed) => set({ bed }),
   loadBed: (bed) => set({ bed, selectedInstanceId: null }),

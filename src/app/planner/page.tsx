@@ -13,6 +13,7 @@ import { SaveExportMenu } from "@/components/SaveExportMenu";
 import { PlannerShell, type PlannerSection } from "@/components/PlannerShell";
 import { PlannerDnd } from "@/components/PlannerDnd";
 import { MobilePaletteButton } from "@/components/MobilePaletteButton";
+import { MobileQuickPalette } from "@/components/MobileQuickPalette";
 import { usePlanner } from "@/lib/store";
 import { loadFromLocal, saveToLocal } from "@/lib/persistence";
 import type { Plant } from "@/lib/types";
@@ -98,6 +99,10 @@ export default function PlannerPage() {
             pendingPlantId={pendingPlantId}
             onPick={handlePick}
             onCancelPending={() => setPendingPlantId(null)}
+          />
+          <MobileQuickPalette
+            pendingPlantId={pendingPlantId}
+            onPick={handlePick}
           />
         </PlannerDnd>
       ),
